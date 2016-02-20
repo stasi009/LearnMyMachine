@@ -3,8 +3,6 @@ import os
 import struct
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-plt.style.use("ggplot")
 
 def load_mnist(path,prefix):
     labels_path = os.path.join(path,"%s-labels.idx1-ubyte"%prefix)
@@ -20,5 +18,3 @@ def load_mnist(path,prefix):
 
     return labels,images
 
-def plot_digits():
-    pass
