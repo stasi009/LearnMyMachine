@@ -44,8 +44,21 @@ class MnistDataset(object):
         plt.tight_layout()
         plt.show()
 
-    def random_plot_same_digits(self):
-        pass
+    def random_plot_same_digits(self,digit,nrows=4,ncols=4):
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True,sharey=True)
+        axes = axes.flatten()
+
+        all_valid_images =self.Xtrain[self.ytrain == digit]
+        selected_images = all_valid_images[np.random.randint(0,len(all_valid_images),nrows*ncols)]
+
+        for index in xrange(len(selected_images)):
+            imag = selected_images[index].reshape(28,28)
+            axes[index].imshow(imag, cmap='Greys', interpolation='nearest')
+
+        axes[0].set_xticks([])
+        axes[0].set_yticks([])
+        plt.tight_layout()
+        plt.show()
 
 
 
