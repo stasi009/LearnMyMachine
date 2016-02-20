@@ -29,6 +29,9 @@
     <Compile Include="digits_recognization1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MnistDataset.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="neuralnetwork1.py">
       <SubType>Code</SubType>
     </Compile>
