@@ -20,7 +20,7 @@ class Utility(object):
         return onehot
 
     @staticmethod
-    def add_bias(self, X, how='column'):
+    def add_bias(X, how='column'):
         if how == 'column':
             X_new = np.ones((X.shape[0], X.shape[1] + 1))
             X_new[:, 1:] = X
@@ -30,6 +30,12 @@ class Utility(object):
         else:         raise AttributeError('`how` must be `column` or `row`')
         return X_new
 
+    @staticmethod
+    def l2_penalty(l2,W):
+        """
+        W: [num_next_neurons,1+num_local_neurons] matrix
+        """
+        return 0.5 * l2 * np.sum(W[:,1:] ** 2)# exclude 1st column which is for bias
 class InputBlock(object):
     def __init__(self,n_features,n_hidden):
         # W is a [n_hidden,n_features+1] matrix
@@ -44,8 +50,9 @@ class InputBlock(object):
         X_extend = Utility.add_bias(X,how="column")
         return w.dot(X_extend.T)
 
-    def feedforward(self,X) :
-        return self.__feedforward(X,self.W)
+    def feedforward(self,X) :  return self.__feedforward(X,self.W)
+
+    def l2_penalty(self,l2): return Utility.l2_penalty(l2,self.W)
 
     def gradient(self):
         pass
@@ -62,19 +69,49 @@ class HiddenBlock(object):
         """
         X: input, [n_hidden,n_samples] matrix
         w: [n_output,n_hidden+1]
+        self.activation: [n_hidden+1,n_sample]
         result: [n_output,n_sample] matrix
         """
         activation = expit(X)
-        return w.dot(Utility.add_bias(activation,how="row"))
+        self.activation= Utility.add_bias(activation,how="row")
+        return w.dot(self.activation)
 
-    def feedforward(self,X):
-        return self.__feedforward(X,self.W)
+    def feedforward(self,X):    return self.__feedforward(X,self.W)
+
+    def l2_penalty(self,l2): return Utility.l2_penalty(l2,self.W)
+
+    def backpropagate(self,grad_cost_output,l2):
+        # grad_cost_ouput: [n_output,n_sample] matrix
+        # W: [n_output,n_hidden+1] matrix
+        # grad_cost_activation: [n_hidden+1,n_sample] matrix
+        grad_cost_activation = self.W.T.dot(grad_cost_output)
+
+        # grad_cost_ouput: [n_output,n_sample] matrix
+        # activation: [n_hidden+1,n_sample]
+        # grad_cost_w: [n_output,n_hidden+1] matrix
+        self.grad_cost_w = grad_cost_output.dot(self.activation.T)
+
+        # point-wise multiplication, not matrix multiplication
+        # three [n_hidden,n_sample] matrix pointwise multiplication, result is also a [n_hidden,n_sample] matrix
+        nobias_activation = self.activation[1:,:]
+        return grad_cost_activation[1:,:] * nobias_activation * (1-nobias_activation)
 
 class OutputBlock(object):
-    def __init__(self,n_digits):
-        pass
+    def __init__(self,ytarget):
+        """
+        ytarget: [n_digits,n_samples] matrix
+        """
+        self.ytarget = ytarget
 
     def feedforward(self,X):
-        return expit(X)
+        """
+        X and output: [n_digits,n_sample] matrix
+        """
+        self.activation = expit(X)
+        return self.activation
+
+    def backpropagate(self):
+        """ return gradient wrt inputs: [n_digits,n_samples] matrix"""
+        return self.activation - self.ytarget
 
 
