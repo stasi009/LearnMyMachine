@@ -51,7 +51,7 @@ class MnistDataset(object):
         all_valid_images =self.Xtrain[self.ytrain == digit]
         selected_images = all_valid_images[np.random.randint(0,all_valid_images.shape[0],nrows*ncols)]
 
-        for index in xrange(len(selected_images)):
+        for index in xrange(selected_images.shape[0]):
             imag = selected_images[index].reshape(28,28)
             axes[index].imshow(imag, cmap='Greys', interpolation='nearest')
 
