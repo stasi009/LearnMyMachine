@@ -37,11 +37,12 @@ class Utility(object):
         W: [num_next_neurons,1+num_local_neurons] matrix
         """
         return 0.5 * l2 * np.sum(W[:,1:] ** 2)# exclude 1st column which is for bias
+
 class InputBlock(object):
     def __init__(self,n_features,n_hidden):
         # W is a [n_hidden,n_features+1] matrix
         self.W = Utility.init_weights(n_features,n_hidden)
-        self.velocity = 0.0
+        self.velocity = np.zeros_like(self.W)
 
     def __feedforward(self,X,w):
         """
@@ -74,7 +75,7 @@ class HiddenBlock(object):
         W is [n_output,n_hidden+1] matrix
         """
         self.W = Utility.init_weights(n_hidden,n_output)
-        self.velocity = 0
+        self.velocity = np.zeros_like(self.W)
 
     def __feedforward(self,X,w):
         """
@@ -185,22 +186,25 @@ class NeuralNetwork(object):
 
             if shuffle:
                 idx = np.random.permutation(y.shape[0])
-                X,Yohe = X_data[idx],Yohe[idx]
+                X,Yohe = X[idx],Yohe[idx]
 
             mini_indices = np.array_split(range(y.shape[0]), minibatches)
+            batch_costs = 0
             for idx in mini_indices:
                 Xbatch,Ybatch = X[idx],Yohe[:,idex]
 
                 # ------------------ feed forward
-                cost = self.__feedforward(Xbatch,Ybatch,l2)
-                costs.append(cost)
-
+                batch_costs += self.__feedforward(Xbatch,Ybatch,l2)
+                
                 # ------------------ back propagate
                 self.__backpropagate(Ybatch,l2)
 
                 # ------------------ update weights
                 self._input.update_weights(learnrate,shrink_velocity)
                 self._hidden.update_weights(learnrate,shrink_velocity)
+
+            # cost may oscillate across batches, so average them
+            costs.append(batch_costs / minibatches)
 
         return costs
 
