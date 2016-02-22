@@ -7,7 +7,7 @@ class Utility(object):
     def init_weights(num_local_neurons,num_next_neurons):
         nrows = num_next_neurons
         ncols = num_local_neurons + 1# include the bias term
-        self.W = np.random.uniform(-1.0, 1.0,size=nrows * ncols).reshape(nrows,ncols)
+        return np.random.uniform(-1.0, 1.0,size=nrows * ncols).reshape(nrows,ncols)
 
     @staticmethod
     def encode_labels(y, k):
@@ -174,6 +174,7 @@ class NeuralNetwork(object):
         minibatches = params.get("minibatches",50)
         learnrate = params.get("learnrate",0.001)
         shrink_learnrate = params.get("shrink_learnrate",0.00001)
+        shrink_velocity = params.get("shrink_velocity",0.001)
         shuffle = params.get("shuffle",True)
 
         # Yohe: [n_digits,n_samples]
@@ -186,15 +187,15 @@ class NeuralNetwork(object):
 
             if shuffle:
                 idx = np.random.permutation(y.shape[0])
-                X,Yohe = X[idx],Yohe[idx]
+                X,Yohe = X[idx],Yohe[:,idx]
 
             mini_indices = np.array_split(range(y.shape[0]), minibatches)
-            batch_costs = 0
+            batch_cost = 0
             for idx in mini_indices:
-                Xbatch,Ybatch = X[idx],Yohe[:,idex]
+                Xbatch,Ybatch = X[idx],Yohe[:,idx]
 
                 # ------------------ feed forward
-                batch_costs += self.__feedforward(Xbatch,Ybatch,l2)
+                batch_cost += self.__feedforward(Xbatch,Ybatch,l2)
                 
                 # ------------------ back propagate
                 self.__backpropagate(Ybatch,l2)
@@ -204,7 +205,9 @@ class NeuralNetwork(object):
                 self._hidden.update_weights(learnrate,shrink_velocity)
 
             # cost may oscillate across batches, so average them
-            costs.append(batch_costs / minibatches)
+            batch_cost /= minibatches
+            print "%d-epoch: %3.2f"%(index+1,batch_cost)
+            costs.append(batch_cost)
 
         return costs
 

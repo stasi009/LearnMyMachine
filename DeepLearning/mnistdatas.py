@@ -14,7 +14,7 @@ class MnistDataset(object):
         self.Xtrain,self.ytrain = self.__load("train")
 
     def load_test(self):
-        self.Xtest,self.ytest = self.__laod("t10k")
+        self.Xtest,self.ytest = self.__load("t10k")
 
     def __load(self,prefix):
         labels_path = os.path.join(self.path,"%s-labels.idx1-ubyte"%prefix)
@@ -36,7 +36,7 @@ class MnistDataset(object):
 
         for index in xrange(10):
             allimages = self.Xtrain[self.ytrain == index]
-            imag = allimages[ np.random.randint(0,len(allimages))].reshape(28,28)
+            imag = allimages[ np.random.randint(0,allimages.shape[0])].reshape(28,28)
             axes[index].imshow(imag, cmap='Greys', interpolation='nearest')
 
         axes[0].set_xticks([])
@@ -49,7 +49,7 @@ class MnistDataset(object):
         axes = axes.flatten()
 
         all_valid_images =self.Xtrain[self.ytrain == digit]
-        selected_images = all_valid_images[np.random.randint(0,len(all_valid_images),nrows*ncols)]
+        selected_images = all_valid_images[np.random.randint(0,all_valid_images.shape[0],nrows*ncols)]
 
         for index in xrange(len(selected_images)):
             imag = selected_images[index].reshape(28,28)
