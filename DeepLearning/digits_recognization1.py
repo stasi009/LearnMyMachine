@@ -30,14 +30,29 @@ params["shuffle"] = True
 costs = network.fit(mnist.Xtrain,mnist.ytrain,params)
 plt.plot(costs)
 
+########################################## enable gradient checking
+params = {}
+params["l2"] = 0.1
+params["epochs"] = 10 # don't need so many epoches when perform gradient checking
+params["minibatches"] = 50
+params["learnrate"] = 0.001
+params["shrink_learnrate"] = 0.00001
+params["shrink_velocity"] = 0.001
+params["shuffle"] = True
+params["checkgrad_epsilon"] = 1e-5 # enable gradient checking
+
+network.fit(mnist.Xtrain,mnist.ytrain,params)
+
 ########################################## accuracy on train data
 predicted_ytrain = network.predict(mnist.Xtrain)
 train_accuracy = accuracy_score(mnist.ytrain,predicted_ytrain)
+print "Train Accuracy: %3.2f%%"%(train_accuracy * 100)
 
 ########################################## accuracy on test data
 mnist.load_test()
 predicted_ytest = network.predict(mnist.Xtest)
 test_accuracy = accuracy_score(mnist.ytest,predicted_ytest)
+print "Test Accuracy: %3.2f%%"%(test_accuracy * 100)
 
 ########################################## save the model
 with open("network.pkl", 'wb') as outfile:
