@@ -15,6 +15,21 @@ mnist.load_train()
 mnist.random_plot_different_digits()
 mnist.random_plot_same_digits(9)
 
+########################################## enable gradient checking
+#params = {}
+#params["l2"] = 0.1
+#params["epochs"] = 10 # don't need so many epoches when perform gradient checking
+#params["minibatches"] = 3
+#params["learnrate"] = 0.001
+#params["shrink_learnrate"] = 0.00001
+#params["shrink_velocity"] = 0.001
+#params["shuffle"] = False
+#params["checkgrad_epsilon"] = 1e-5 # enable gradient checking
+
+## only for debugging/test purpose, no need to specify many hidden neurons
+#network = neuralnetwork1.NeuralNetwork(n_features = mnist.Xtrain.shape[1],n_hidden=2,n_digits=10)
+#network.fit(mnist.Xtrain,mnist.ytrain,params)
+
 ########################################## train
 network = neuralnetwork1.NeuralNetwork(n_features = mnist.Xtrain.shape[1],n_hidden=50,n_digits=10)
 
@@ -29,19 +44,6 @@ params["shuffle"] = True
 
 costs = network.fit(mnist.Xtrain,mnist.ytrain,params)
 plt.plot(costs)
-
-########################################## enable gradient checking
-params = {}
-params["l2"] = 0.1
-params["epochs"] = 10 # don't need so many epoches when perform gradient checking
-params["minibatches"] = 50
-params["learnrate"] = 0.001
-params["shrink_learnrate"] = 0.00001
-params["shrink_velocity"] = 0.001
-params["shuffle"] = True
-params["checkgrad_epsilon"] = 1e-5 # enable gradient checking
-
-network.fit(mnist.Xtrain,mnist.ytrain,params)
 
 ########################################## accuracy on train data
 predicted_ytrain = network.predict(mnist.Xtrain)

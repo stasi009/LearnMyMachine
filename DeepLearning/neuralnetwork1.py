@@ -196,6 +196,8 @@ class NeuralNetwork(object):
 
                 numerical_grad_w[r,c] = (cost_pos - cost_neg) / (2 * epsilon)
                 Wepsilon[r,c] = 0 # reset
+                
+                print ".",# print progress
 
         return numerical_grad_w
 
@@ -203,8 +205,8 @@ class NeuralNetwork(object):
         numeric_grad_inputW = self.__numerical_gradient("input",X,Yohe,l2,epsilon)
         numeric_grad_hiddenW = self.__numerical_gradient("hidden",X,Yohe,l2,epsilon)
 
-        numeric_gradients = np.hstack((numeric_grad_inputW.flattern(),numeric_grad_hiddenW.flattern()))
-        analytic_gradients = np.hstack((self._input.grad_cost_w.flattern(),self._hidden.grad_cost_w.flatter()))
+        numeric_gradients = np.hstack((numeric_grad_inputW.flatten(),numeric_grad_hiddenW.flatten()))
+        analytic_gradients = np.hstack((self._input.grad_cost_w.flatten(),self._hidden.grad_cost_w.flatten()))
 
         norm_difference = np.linalg.norm(numeric_gradients - analytic_gradients)
         norm_numeric = np.linalg.norm(numeric_gradients)
@@ -236,7 +238,7 @@ class NeuralNetwork(object):
 
             mini_indices = np.array_split(range(y.shape[0]), minibatches)
             batch_cost = 0
-            for batchindex,idx in enumerate( mini_indices):
+            for batchindex,idx in enumerate(mini_indices):
                 Xbatch,Ybatch = X[idx],Yohe[:,idx]
 
                 # ------------------ feed forward
@@ -247,11 +249,11 @@ class NeuralNetwork(object):
 
                 # ------------------ gradient checking if enabled
                 if checkgrad_epsilon > 0:
+                    print "\nEpoch#%d, Batch#%d, begin gradient checking, ......" % (epindex + 1,batchindex + 1)
                     relative_error = self.check_gradient(Xbatch,Ybatch,l2,checkgrad_epsilon)
-                    print_content = (epindex+1,batchindex+1, relative_error)
-                    if relative_error <= 1e-7:   print('    Epoch#%d, Batch#%d, OK: %3.2f' %print_content)
-                    elif grad_diff <= 1e-4:      print('*** Epoch#%d, Batch#%d, WARNING: %3.2f' % print_content)
-                    else:                        print('!!! Epoch#%d, Batch#%d, PROBLEM: %3.2f' % print_content)
+                    if relative_error <= 1e-7:   print('    OK:      %3.2f' % relative_error)
+                    elif grad_diff <= 1e-4:      print('*** WARNING: %3.2f' % relative_error)
+                    else:                        print('!!! PROBLEM: %3.2f' % relative_error)
 
                 # ------------------ update weights
                 self._input.update_weights(learnrate,shrink_velocity)

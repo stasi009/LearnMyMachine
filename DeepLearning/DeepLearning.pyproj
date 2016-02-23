@@ -5,7 +5,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>4318664e-c09a-40a4-9381-fb16c2ca24ea</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>DeepLearning.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,7 +26,6 @@
     <Compile Include="commfuncs.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DeepLearning.py" />
     <Compile Include="digits_recognization1.py">
       <SubType>Code</SubType>
     </Compile>
