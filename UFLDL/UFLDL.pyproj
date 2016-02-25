@@ -22,6 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="mnistdatas.py" />
     <Compile Include="UFLDL.py" />
   </ItemGroup>
   <PropertyGroup>
