@@ -7,7 +7,7 @@ class Utility(object):
     def init_weights(num_local_neurons,num_next_neurons):
         nrows = num_next_neurons
         ncols = num_local_neurons + 1# include the bias term
-        return np.random.uniform(-1.0, 1.0,size=nrows * ncols).reshape(nrows,ncols)
+        return np.random.uniform(-1.0, 1.0,size=(nrows,ncols))
 
     @staticmethod
     def encode_labels(y, k):
@@ -37,6 +37,7 @@ class Utility(object):
         W: [num_next_neurons,1+num_local_neurons] matrix
         """
         return 0.5 * l2 * np.sum(W[:,1:] ** 2)# exclude 1st column which is for bias
+
 class InputBlock(object):
     def __init__(self,n_features,n_hidden):
         # W is a [n_hidden,n_features+1] matrix
