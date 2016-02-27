@@ -26,3 +26,10 @@ def l2_penalty(l2,W):
     W: [num_next_neurons,num_local_neurons+1] matrix
     """
     return 0.5 * l2 * np.sum(W[:,1:] ** 2)# exclude 1st column which is for bias
+
+def extract_param_matrix(param_vector,offset,templateW):
+    next_offset = offset+templateW.size
+    shape = templateW.shape
+    Wmatrix = param_vector[offset:next_offset].reshape(shape[0],shape[1])
+    return next_offset,Wmatrix
+

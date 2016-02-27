@@ -1,5 +1,6 @@
 ﻿
 import numpy as np
+import scipy.optimize 
 from scipy.special import expit
 import commfuncs
 
@@ -104,5 +105,50 @@ class OutputBlock(object):
         num_samples = Y.shape[1]
         return (self.activation - Y) * self.activation * (1-self.activation)/(float(num_samples))
 
+class SparseAutoEncoder(object):
+
+    def __init__(self,n_features,n_hidden,**params):
+        l2 = params["l2"]
+        expected_rho = params["expected_rho"]
+        sparse_beta = params["sparse_beta"]
+
+        self._input = InputBlock(n_features,n_hidden,l2=l2)
+        self._hidden = HiddenBlock(n_hidden,n_features,l2=l2,expected_rho=expected_rho,sparse_beta=sparse_beta)
+        self._output = OutputBlock()
+
+    def __feedforward(self,X,Y):
+        output_from_input = self._input.feedforward(X)
+        output_from_hidden = self._hidden.feedforward(output_from_input)
+        self._output.feedforward(output_from_hidden)
+        return self._output.cost(Y) + self._input.penalty() + self._hidden.penalty()
+
+    def __backpropagate(self,Y):
+        grad_output_input = self._output.backpropagate(Y) # gradient on output_block's input
+        grad_hidden_input = self._hidden.backpropagate(grad_output_input) # gradient on hidden_block's input
+        self._input.backpropagate(grad_hidden_input)
+
+    def __assign_weights(self,param_vector):
+        offset = 0
+        offset,self._input.W = commfuncs.extract_param_matrix(param_vector,offset,self._input.W)
+        offset,self._hidden.W = commfuncs.extract_param_matrix(param_vector,offset,self._hidden.W)
+        assert offset==len(param_vector)
+
+    def __objective_gradients(self,param_vector):
+        self.__assign_weights(param_vector)
+
+        cost = self.__feedforward(self.X,self.X)
+        self.__backpropagate(self.X)
+
+        gradients = np.r_[self._input.grad_cost_w.flatten(),self._hidden.grad_cost_w.flatten()]
+        return cost,gradients
+
+    def fit(self,X,method="L-BFGS-B",maxiter=400):
+        self.X = X
+
+        options = {'maxiter': maxiter, 'disp': True}
+        w0 = np.r_[self._input.W.flatten(),self._hidden.W.flatten()]
+        result = scipy.optimize.minimize(self.__objective_gradients, w0, method=method, jac=True, options=options)
+
+        self.__assign_weights( result.x )
 
 
