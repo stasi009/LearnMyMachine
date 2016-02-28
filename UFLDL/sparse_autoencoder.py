@@ -40,7 +40,7 @@ class HiddenBlock(object):
         self.l2 = l2
         self.expected_rho = expected_rho
         self.sparse_beta = sparse_beta
-        self.epsilon = 1e-4
+        self.epsilon = 1e-6
 
     def _feedforward(self,X,w):
         # X: input, [H,S] matrix
