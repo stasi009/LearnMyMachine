@@ -48,6 +48,8 @@ class HiddenBlock(object):
         activation = expit(X)
         
         # rho_hat: actual average activation,[H] vector
+        # fix the range to [epsilon,1-epsilon] to avoid numeric issue
+        # numeric issue often happens during gradient checking on small dataset
         self.rho_hat = np.mean(activation,axis=1)
         self.rho_hat[self.rho_hat < self.epsilon] = self.epsilon
         self.rho_hat[self.rho_hat > 1 - self.epsilon] = 1 - self.epsilon
@@ -123,21 +125,25 @@ class SparseAutoEncoder(object):
         offset,self._hidden.W = commfuncs.extract_param_matrix(weights,offset,self._hidden.W)
         assert offset == len(weights)
 
-    def __cost(self,weights,X):
+    def __cost(self,weights,X,Y):
+        """
+        X: [S,F]
+        Y: [O,S]
+        """
         self.__assign_weights(weights)
 
         output_from_input = self._input.feedforward(X)
         output_from_hidden = self._hidden.feedforward(output_from_input)
         self._output.feedforward(output_from_hidden)
 
-        return self._output.cost(X) + self._input.penalty() + self._hidden.penalty()
+        return self._output.cost(Y) + self._input.penalty() + self._hidden.penalty()
 
     def __cost_gradients(self,weights):
         # ------------ feedforward to get cost
-        cost = self.__cost(weights,self.X)
+        cost = self.__cost(weights,self.X,self.X.T)
         
         # ------------ backpropagate to get gradients
-        grad_output_input = self._output.backpropagate(self.X) # gradient on output_block's input
+        grad_output_input = self._output.backpropagate(self.X.T) # gradient on output_block's input
         grad_hidden_input = self._hidden.backpropagate(grad_output_input) # gradient on hidden_block's input
         self._input.backpropagate(grad_hidden_input)
         
@@ -162,14 +168,14 @@ class SparseAutoEncoder(object):
             old_weight = weights[index]
 
             weights[index] += epsilon
-            cost_plus = self.__cost(weights,X)
+            cost_plus = self.__cost(weights,X,X.T)
 
             weights[index] -= 2 * epsilon
-            cost_minus = self.__cost(weights,X)
+            cost_minus = self.__cost(weights,X,X.T)
 
             gradients[index] = (cost_plus - cost_minus) / (2 * epsilon)
             weights[index] = old_weight
-            print "%d/%d numeric gradients, %3.2f%% completes" % (index + 1,total,(index + 1) * 100.0 / total)
+            # print "%d/%d numeric gradients, %3.2f%% completes" % (index + 1,total,(index + 1) * 100.0 / total)
 
         return gradients
 
@@ -178,8 +184,7 @@ class SparseAutoEncoder(object):
         cost, analytic_gradients = self.__cost_gradients(weights)
 
         numeric_gradients = self.__numeric_gradients(X,weights,epsilon)
-
-        print "gradients, 1st column is analytic, 2nd column is numeric: \n%s" % (np.c_[analytic_gradients,numeric_gradients])
+        # print "gradients, 1st column is analytic, 2nd column is numeric: \n%s" % (np.c_[analytic_gradients,numeric_gradients])
 
         norm_difference = np.linalg.norm(numeric_gradients - analytic_gradients)
         norm_numeric = np.linalg.norm(numeric_gradients)
@@ -191,7 +196,7 @@ class SparseAutoEncoder(object):
         elif relative_error <= 1e-4:      
             print('*** WARNING: relative error=%e' % relative_error)
         else:                        
-            print('!!! PROBLEM: relative error=%e' % relative_error)
+            raise Exception('!!! PROBLEM: relative error=%e' % relative_error)
 
 
 

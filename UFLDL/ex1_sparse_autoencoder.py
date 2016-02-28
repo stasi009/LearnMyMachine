@@ -18,15 +18,15 @@ def random_input(n_samples,n_features):
     return mnist.Xtrain[np.ix_(row_indices,col_indices)]
 
 def check_gradients():
-    n_features = 10
-    n_hidden = 2
-    n_samples = 10
+    n_samples = 200
+    n_features = 50
     X = np.random.uniform(0,255,(n_samples,n_features))
 
-    sae = sparse_autoencoder.SparseAutoEncoder(n_features,2,l2=0,expected_rho=0.1,sparse_beta=0)
+    n_hidden = 20
+    sae = sparse_autoencoder.SparseAutoEncoder(n_features,n_hidden,l2=3e-3,expected_rho=0.1,sparse_beta=3)
     
     weights = sae.weights_vector()
-
-    sae.check_gradients(X,weights)    
+    epsilon = 1e-5
+    sae.check_gradients(X,weights,epsilon)    
 
 
