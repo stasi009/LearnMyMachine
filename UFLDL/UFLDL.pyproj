@@ -25,6 +25,7 @@
     <Compile Include="commfuncs.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="display_network.py" />
     <Compile Include="ex1_sparse_autoencoder.py">
       <SubType>Code</SubType>
     </Compile>
