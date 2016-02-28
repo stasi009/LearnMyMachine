@@ -29,7 +29,6 @@ def l2_penalty(l2,W):
 
 def extract_param_matrix(param_vector,offset,templateW):
     next_offset = offset+templateW.size
-    shape = templateW.shape
-    Wmatrix = param_vector[offset:next_offset].reshape(shape[0],shape[1])
+    Wmatrix = param_vector[offset:next_offset].reshape(templateW.shape)
     return next_offset,Wmatrix
 
