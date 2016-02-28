@@ -3,6 +3,7 @@ import numpy as np
 import scipy.optimize 
 from scipy.special import expit
 import commfuncs
+import display_network
 
 class InputBlock(object):
     def __init__(self,n_features,n_hidden,l2):
@@ -197,6 +198,11 @@ class SparseAutoEncoder(object):
             print('*** WARNING: relative error=%e' % relative_error)
         else:                        
             raise Exception('!!! PROBLEM: relative error=%e' % relative_error)
+
+    def visualize_meta_features(self):
+        # W is a [H,F+1] matrix
+        meta_features = self._input.W[:,1:].transpose() # [F,H] matrix
+        display_network.display_network(meta_features)
 
 
 
