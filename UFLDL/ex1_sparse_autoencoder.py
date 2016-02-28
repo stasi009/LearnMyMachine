@@ -31,7 +31,7 @@ def check_gradients():
 
 def fit_display():
     n_samples = 10000
-    Xtrain = mnist.Xtrain[:n_samples]/255.0
+    Xtrain = mnist.Xtrain[:n_samples]
 
     n_features = mnist.Xtrain.shape[1]
     n_hidden = 196
