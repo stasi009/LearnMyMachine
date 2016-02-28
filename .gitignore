@@ -7,3 +7,4 @@
 *.pyc
 *.pkl
 /UFLDL/data
+/UFLDL/iterate.dat

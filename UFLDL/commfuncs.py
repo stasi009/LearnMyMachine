@@ -5,7 +5,7 @@ def KL_divergence(x, y):
     return x * np.log(x / y) + (1 - x) * np.log((1 - x) / (1 - y))
 
 def init_weights(num_local_neurons,num_next_neurons):
-    r = np.sqrt( 6.0/(num_local_neurons + num_next_neurons + 1) )
+    r = np.sqrt(6.0 / (num_local_neurons + num_next_neurons + 1))
     nrows = num_next_neurons
     ncols = num_local_neurons + 1# include the bias term
     # no need to treat bias specially, initialization of bias won't play a big role
@@ -28,7 +28,7 @@ def l2_penalty(l2,W):
     return 0.5 * l2 * np.sum(W[:,1:] ** 2)# exclude 1st column which is for bias
 
 def extract_param_matrix(param_vector,offset,templateW):
-    next_offset = offset+templateW.size
+    next_offset = offset + templateW.size
     Wmatrix = param_vector[offset:next_offset].reshape(templateW.shape)
     return next_offset,Wmatrix
 

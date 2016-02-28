@@ -41,7 +41,6 @@ class HiddenBlock(object):
         self.l2 = l2
         self.expected_rho = expected_rho
         self.sparse_beta = sparse_beta
-        self.epsilon = 1e-6
 
     def _feedforward(self,X,w):
         # X: input, [H,S] matrix
@@ -49,11 +48,9 @@ class HiddenBlock(object):
         activation = expit(X)
         
         # rho_hat: actual average activation,[H] vector
-        # fix the range to [epsilon,1-epsilon] to avoid numeric issue
-        # numeric issue often happens during gradient checking on small dataset
+        # !!! No need to fix to boundary
+        # !!! touching boundary only happens when the input isn't properly normalized/scaled
         self.rho_hat = np.mean(activation,axis=1)
-        self.rho_hat[self.rho_hat < self.epsilon] = self.epsilon
-        self.rho_hat[self.rho_hat > 1 - self.epsilon] = 1 - self.epsilon
 
         # self.activation: [H+1,S]
         # w: [O,H+1]
