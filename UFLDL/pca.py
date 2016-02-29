@@ -13,10 +13,11 @@ class PCA(object):
         X: [n_samples,n_features]
         """
         feature_mean = X.mean(axis=0)
-        # although only "center mean" is necessary, we also need to have unit variance
+        # although only "center mean" is necessary, we also need to have unit
+        # variance
         # to ignore the impact caused by different unit
         feature_std = X.std(axis=0)
-        self.Xnormalized = (X - feature_mean)/feature_std
+        self.Xnormalized = (X - feature_mean) / feature_std
 
         U,self.S,Vt = np.linalg.svd(self.Xnormalized)
         self.V = Vt.T
@@ -27,7 +28,7 @@ class PCA(object):
         self.Xprojected = self.Xnormalized.dot(self.V[:,:self.n_components])
 
         if self.whiten:
-            self.Xwhiten = self.Xprojected/(self.S[:self.n_components] + self.__epsilon)
+            self.Xwhiten = self.Xprojected / (self.S[:self.n_components] + self.__epsilon)
             return self.Xwhiten
         else:
             return self.Xprojected
