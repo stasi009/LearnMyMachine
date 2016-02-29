@@ -2,13 +2,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
-from pca import PCA
+from pca import SimplePCA
 
 def demo_pca_2d():
     datafile = "matlab/pcaData.txt"
     X = np.loadtxt(datafile).T
 
-    pca = PCA(whiten=True)
+    pca = SimplePCA(whiten=True)
     Xwhiten = pca.fit_transform(X)
 
     plt.scatter(X[:,0],X[:,1])# in original X, each column is a feature

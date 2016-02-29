@@ -1,7 +1,7 @@
 ﻿
 import numpy as np
 
-class PCA(object):
+class SimplePCA(object):
     
     def __init__(self,n_components=None,whiten=False):
         self.n_components = n_components
