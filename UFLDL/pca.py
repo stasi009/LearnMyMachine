@@ -1,6 +1,11 @@
 ﻿
 import numpy as np
 
+class ImagePCA(object):
+
+    def __init__(self,images):
+        pass
+
 class SimplePCA(object):
     
     def __init__(self,n_components=None,whiten=False):
