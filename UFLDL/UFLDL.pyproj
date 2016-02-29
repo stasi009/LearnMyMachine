@@ -29,11 +29,17 @@
     <Compile Include="ex1_sparse_autoencoder.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ex2_pca.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="mnistdatas.py" />
     <Compile Include="sparse_autoencoder.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="UFLDL.py" />
+    <Compile Include="pca.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
