@@ -14,7 +14,10 @@ import PIL
 # opt_graycolor: whether we use gray as the heat map. Default is true.
 # opt_colmajor: you can switch convention to row major for A. In that
 # case, each row of A is a filter. Default value is false.
-def display_image_patches(A, filename='weights.png'):
+def display_image_patches(A, filename='weights.png',direction="bycolumn"):
+    if direction == "byrow":
+        A = A.T
+
     opt_normalize = True
     opt_graycolor = True
 
