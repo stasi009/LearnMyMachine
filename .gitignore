@@ -8,3 +8,4 @@
 *.pkl
 /UFLDL/data
 /UFLDL/iterate.dat
+*.mat
