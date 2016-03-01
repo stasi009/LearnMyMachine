@@ -3,6 +3,28 @@ import matplotlib.pyplot as plt
 import matplotlib
 import PIL
 
+def visualize_predicted_digits(X,ytrue,ypredict,nrows=5,ncols=5):
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True,sharey=True)
+    axes = axes.flatten()
+
+    selected_indices = np.random.randint(0,X.shape[0],nrows*ncols)
+    selected_images = X[selected_indices,:]
+    selected_ytrue = ytrue[selected_indices]
+    selected_ypredict = ypredict[selected_indices]
+
+    for index in xrange(nrows*ncols):
+        imag = selected_images[index].reshape(28,28)
+        axes[index].imshow(imag, cmap='Greys', interpolation='nearest')
+        title = axes[index].set_title('(%d) t: %d p: %d'% (index+1, selected_ytrue[index], selected_ypredict[index]))
+
+        # set title color based prediction is right or wrong
+        color = "b" if selected_ytrue[index] == selected_ypredict[index] else "r"
+        plt.setp(title, color=color)   
+
+    axes[0].set_xticks([])
+    axes[0].set_yticks([])
+    plt.tight_layout()
+    plt.show()
 
 # This function visualizes filters in matrix A. Each column of A is a
 # filter. We will reshape each column into a square image and visualizes
