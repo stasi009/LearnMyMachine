@@ -3,7 +3,7 @@ import numpy as np
 import scipy.optimize 
 from scipy.special import expit
 import commfuncs
-import display_network
+import display
 
 class InputBlock(object):
     def __init__(self,n_features,n_hidden,l2):
@@ -199,7 +199,8 @@ class SparseAutoEncoder(object):
     def visualize_meta_features(self,pic_name):
         # W is a [H,F+1] matrix
         meta_features = self._input.W[:,1:].transpose() # [F,H] matrix
-        display_network.display_network(meta_features,pic_name)
+        # display_image_patch will treat each column as a single image patch
+        display.display_image_patches(meta_features,pic_name)
 
 
 

@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 import PIL
@@ -14,7 +14,7 @@ import PIL
 # opt_graycolor: whether we use gray as the heat map. Default is true.
 # opt_colmajor: you can switch convention to row major for A. In that
 # case, each row of A is a filter. Default value is false.
-def display_network(A, filename='weights.png'):
+def display_image_patches(A, filename='weights.png'):
     opt_normalize = True
     opt_graycolor = True
 
