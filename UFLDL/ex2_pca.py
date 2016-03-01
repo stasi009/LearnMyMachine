@@ -27,6 +27,17 @@ def demo_pca_2d():
     plt.scatter(Xwhiten[:,0],Xwhiten[:,1])
     plt.title("whitened, all axes have similar scales")
 
+def simple_pca_reconstruct():
+    datafile = "matlab/pcaData.txt"
+    X = np.loadtxt(datafile).T
+
+    pca = SimplePCA(n_components=1,whiten=False)
+    _ = pca.fit_transform(X)
+
+    reconstructed = pca.reconstruct()
+    plt.plot(reconstructed[:,0],reconstructed[:,1])
+
+
 
 
 

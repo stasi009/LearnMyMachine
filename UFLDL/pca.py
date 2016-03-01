@@ -38,3 +38,6 @@ class SimplePCA(object):
         else:
             return self.Xprojected
 
+    def reconstruct(self):
+        return self.Xprojected.dot(self.V[:,:self.n_components].T)
+
