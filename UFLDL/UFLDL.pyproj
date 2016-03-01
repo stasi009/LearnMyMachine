@@ -36,6 +36,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="mnistdatas.py" />
+    <Compile Include="softmax_network.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="sparse_autoencoder.py">
       <SubType>Code</SubType>
     </Compile>
