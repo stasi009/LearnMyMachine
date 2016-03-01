@@ -1,6 +1,7 @@
-
+﻿
 import numpy as np
 from scipy.special import expit
+import commfuncs
 
 class InputBlock(object):
     def __init__(self,n_features,n_hidden,l2):
@@ -8,15 +9,13 @@ class InputBlock(object):
         self.W = commfuncs.init_weights(n_features,n_hidden)
         self.l2 = l2
 
-    def _feedforward(self,X,w):
+    def feedforward(self,X) :  
         # X: [S,F]
         # Xextend: [S,F+1]
         # w: [H,F+1]
         # result: [H,S] matrix
         self.Xextend = commfuncs.add_bias(X,how="column")
-        return w.dot(self.Xextend.T)
-
-    def feedforward(self,X) :  return self._feedforward(X,self.W)
+        return self.W.dot(self.Xextend.T)
 
     def penalty(self): return commfuncs.l2_penalty(self.l2,self.W)
 
@@ -28,7 +27,7 @@ class InputBlock(object):
         self.grad_cost_w[:,1:] += self.l2 * self.W[:,1:]
 
 class HiddenBlock(object):
-    def __init__(self,n_hidden,n_output,l2,expected_rho,sparse_beta):
+    def __init__(self,n_hidden,n_output,l2):
         """
         expected_rho: expected average activation
         sparse_beta:  weight term for the sparse constraint
@@ -36,35 +35,22 @@ class HiddenBlock(object):
         # W is [O,H+1] matrix
         self.W = commfuncs.init_weights(n_hidden,n_output)
         self.l2 = l2
-        self.expected_rho = expected_rho
-        self.sparse_beta = sparse_beta
 
-    def _feedforward(self,X,w):
+    def feedforward(self,X):   
         # X: input, [H,S] matrix
         # activation: [H,S]
         activation = expit(X)
         
-        # rho_hat: actual average activation,[H] vector
-        # !!! No need to fix to boundary
-        # !!! touching boundary only happens when the input isn't properly normalized/scaled
-        self.rho_hat = np.mean(activation,axis=1)
-
         # self.activation: [H+1,S]
         # w: [O,H+1]
         # result: [O,S] matrix
         self.activation = commfuncs.add_bias(activation,how="row")
-        return w.dot(self.activation)
-
-    def feedforward(self,X):    return self._feedforward(X,self.W)
+        return self.W.dot(self.activation)
 
     def penalty(self): 
-        l2penaly = commfuncs.l2_penalty(self.l2,self.W)
-        sparse_constraint = self.sparse_beta * (commfuncs.KL_divergence(self.expected_rho,self.rho_hat).sum())
-        return l2penaly + sparse_constraint
+        return commfuncs.l2_penalty(self.l2,self.W)
 
     def backpropagate(self,grad_cost_output):
-        num_samples = self.activation.shape[1]
-
         # grad_cost_ouput: [O,S] matrix
         # activation: [H+1,S]
         # grad_cost_w: [O,H+1] matrix
@@ -76,11 +62,6 @@ class HiddenBlock(object):
         # grad_cost_activation: [H+1,S] matrix
         grad_activation = self.W.T.dot(grad_cost_output)
 
-        # gradient of "sparse constraints" vs.  "activation"
-        grad_sparse_activation = (self.sparse_beta / float(num_samples)) * (-self.expected_rho / self.rho_hat + (1 - self.expected_rho) / (1 - self.rho_hat)) 
-        grad_sparse_activation = np.tile(grad_sparse_activation,(num_samples,1)).T # [H,S] matrix
-        grad_activation[1:,:] += grad_sparse_activation
-
         # point-wise multiplication, not matrix multiplication
         # three [H,S] matrix pointwise multiplication,
         # result is also a [H,S] matrix
@@ -90,14 +71,15 @@ class HiddenBlock(object):
 class OutputBlock(object):
 
     def feedforward(self,X):
-        """ X and output: [O,S] matrix """
-        self.activation = expit(X)
+        """ X and activation: [O,S] matrix """
+        Xexp = np.exp(X) # [O,S] matrix
+        self.activation = Xexp / (Xexp.sum(axis=0))
         return self.activation
 
     def cost(self,Y):
-        """ Y: [O,S] matrix """
+        """ Y and activation: [O,S] matrix """
         num_samples = Y.shape[1]
-        return np.sum((self.activation - Y) ** 2) / (2.0 * num_samples)
+        return -1.0 * np.sum((np.log(self.activation) * Y)) / num_samples
 
     def backpropagate(self,Y):
         """ 
@@ -105,14 +87,15 @@ class OutputBlock(object):
         return gradient wrt inputs: [O,S] matrix
         """
         num_samples = Y.shape[1]
-        return (self.activation - Y) * self.activation * (1 - self.activation) / (float(num_samples))
+        return (self.activation - Y)  / (float(num_samples))
 
 class Network(object):
 
-    def __init__(self,n_features,n_hidden,l2,expected_rho,sparse_beta):
+    def __init__(self,n_features,n_hidden,n_output,l2):
         self._input = InputBlock(n_features,n_hidden,l2=l2)
-        self._hidden = HiddenBlock(n_hidden,n_features,l2=l2,expected_rho=expected_rho,sparse_beta=sparse_beta)
+        self._hidden = HiddenBlock(n_hidden,n_output,l2=l2)
         self._output = OutputBlock()
+        self._n_output = n_output
 
     def __assign_weights(self,weights):
         offset = 0
@@ -135,10 +118,10 @@ class Network(object):
 
     def __cost_gradients(self,weights):
         # ------------ feedforward to get cost
-        cost = self.__cost(weights,self.X,self.X.T)
+        cost = self.__cost(weights,self.X,self.Yohe)
         
         # ------------ backpropagate to get gradients
-        grad_output_input = self._output.backpropagate(self.X.T) # gradient on output_block's input
+        grad_output_input = self._output.backpropagate(self.Yohe) # gradient on output_block's input
         grad_hidden_input = self._hidden.backpropagate(grad_output_input) # gradient on hidden_block's input
         self._input.backpropagate(grad_hidden_input)
         
@@ -146,16 +129,26 @@ class Network(object):
 
     def weights_vector(self): return np.r_[self._input.W.flatten(),self._hidden.W.flatten()]
 
-    def fit(self,X,method="L-BFGS-B",maxiter=400):
+    def fit(self,X,y,method="L-BFGS-B",maxiter=400):
         self.X = X
+        self.Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
 
         options = {'maxiter': maxiter, 'disp': True}
-        result = scipy.optimize.minimize(self.__cost_gradients, self.weights_vector(), 
-                                         method=method, jac=True, options=options)
+        result = scipy.optimize.minimize(self.__cost_gradients, self.weights_vector(), method=method, jac=True, options=options)
 
         self.__assign_weights(result.x)
 
-    def __numeric_gradients(self,X, weights, epsilon):
+    def predict_proba(self,X):
+        output_from_input = self._input.feedforward(X)
+        output_from_hidden = self._hidden.feedforward(output_from_input)
+        probas = self._output.feedforward(output_from_hidden) # [O,S] matrix
+        return probas.T # [S,O] matrix
+
+    def predict(self,X):
+        predicted_probas = self.predict_proba(X)# [S,O] matrix
+        return predicted_probas.argmax(axis=1)
+
+    def __numeric_gradients(self,X,Yohe, weights, epsilon):
         total = len(weights)
         gradients = np.zeros(total)
 
@@ -163,10 +156,10 @@ class Network(object):
             old_weight = weights[index]
 
             weights[index] += epsilon
-            cost_plus = self.__cost(weights,X,X.T)
+            cost_plus = self.__cost(weights,X,Yohe)
 
             weights[index] -= 2 * epsilon
-            cost_minus = self.__cost(weights,X,X.T)
+            cost_minus = self.__cost(weights,X,Yohe)
 
             gradients[index] = (cost_plus - cost_minus) / (2 * epsilon)
             weights[index] = old_weight
@@ -174,11 +167,12 @@ class Network(object):
 
         return gradients
 
-    def check_gradients(self,X, weights, epsilon=1e-4):
+    def check_gradients(self,X,y, weights, epsilon=1e-4):
         self.X = X
+        self.Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
         cost, analytic_gradients = self.__cost_gradients(weights)
 
-        numeric_gradients = self.__numeric_gradients(X,weights,epsilon)
+        numeric_gradients = self.__numeric_gradients(X,self.Yohe,weights,epsilon)
         # print "gradients, 1st column is analytic, 2nd column is numeric: \n%s" % (np.c_[analytic_gradients,numeric_gradients])
 
         norm_difference = np.linalg.norm(numeric_gradients - analytic_gradients)
@@ -193,11 +187,7 @@ class Network(object):
         else:                        
             raise Exception('!!! PROBLEM: relative error=%e' % relative_error)
 
-    def visualize_meta_features(self,pic_name):
-        # W is a [H,F+1] matrix
-        meta_features = self._input.W[:,1:].transpose() # [F,H] matrix
-        # display_image_patch will treat each column as a single image patch
-        display.display_image_patches(meta_features,pic_name)
+    
 
 
 
