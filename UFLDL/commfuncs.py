@@ -32,3 +32,13 @@ def extract_param_matrix(param_vector,offset,templateW):
     Wmatrix = param_vector[offset:next_offset].reshape(templateW.shape)
     return next_offset,Wmatrix
 
+def encode_digits(y, k):
+    """
+    always assume y is from [0,1,...,k-1]
+    returned result is a [O,S] matrix, each row is a digit, each column is a sample
+    """
+    onehot = np.zeros((k, y.shape[0]))
+    for idx, val in enumerate(y):
+        onehot[val, idx] = 1.0
+    return onehot
+
