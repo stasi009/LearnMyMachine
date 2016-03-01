@@ -1,5 +1,6 @@
 ﻿
 import numpy as np
+import scipy.optimize 
 from scipy.special import expit
 import commfuncs
 
@@ -89,7 +90,7 @@ class OutputBlock(object):
         num_samples = Y.shape[1]
         return (self.activation - Y)  / (float(num_samples))
 
-class Network(object):
+class NeuralNetwork(object):
 
     def __init__(self,n_features,n_hidden,n_output,l2):
         self._input = InputBlock(n_features,n_hidden,l2=l2)
