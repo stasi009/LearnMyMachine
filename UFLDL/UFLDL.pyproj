@@ -32,6 +32,9 @@
     <Compile Include="ex2_pca.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="matloader.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="mnistdatas.py" />
     <Compile Include="sparse_autoencoder.py">
       <SubType>Code</SubType>

@@ -2,7 +2,33 @@
 import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
+import matloader
+import display
 from pca import SimplePCA
+
+seed = 9
+np.random.seed(seed)
+
+patches = matloader.sample_raw_images("matlab/IMAGES_RAW.mat",1000,seed)
+num_samples = patches.shape[1]
+random_sel = np.random.choice(num_samples,400)
+display.display_image_patches(patches[:,random_sel],"raw_images.png")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def demo_pca_2d():
     datafile = "matlab/pcaData.txt"
