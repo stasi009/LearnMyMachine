@@ -72,6 +72,10 @@ class HiddenBlock(object):
 class OutputBlock(object):
 
     def feedforward(self,X):
+        # remove the largest, to avoid overflow
+        # it is only a trick to avoid numeric issue
+        # this trick won't change "activation" and its gradient
+        X -= np.max(X)
         """ X and activation: [O,S] matrix """
         Xexp = np.exp(X) # [O,S] matrix
         self.activation = Xexp / (Xexp.sum(axis=0))
