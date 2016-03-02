@@ -11,15 +11,13 @@ class InputBlock(object):
         self.W = commfuncs.init_weights(n_features,n_hidden)
         self.l2 = l2
 
-    def _feedforward(self,X,w):
+    def feedforward(self,X):
         # X: [S,F]
         # Xextend: [S,F+1]
         # w: [H,F+1]
         # result: [H,S] matrix
         self.Xextend = commfuncs.add_bias(X,how="column")
-        return w.dot(self.Xextend.T)
-
-    def feedforward(self,X) :  return self._feedforward(X,self.W)
+        return self.W.dot(self.Xextend.T)
 
     def penalty(self): return commfuncs.l2_penalty(self.l2,self.W)
 
@@ -42,7 +40,7 @@ class HiddenBlock(object):
         self.expected_rho = expected_rho
         self.sparse_beta = sparse_beta
 
-    def _feedforward(self,X,w):
+    def _feedforward(self,X):
         # X: input, [H,S] matrix
         # activation: [H,S]
         activation = expit(X)
@@ -56,9 +54,7 @@ class HiddenBlock(object):
         # w: [O,H+1]
         # result: [O,S] matrix
         self.activation = commfuncs.add_bias(activation,how="row")
-        return w.dot(self.activation)
-
-    def feedforward(self,X):    return self._feedforward(X,self.W)
+        return self.W.dot(self.activation)
 
     def penalty(self): 
         l2penaly = commfuncs.l2_penalty(self.l2,self.W)
