@@ -40,7 +40,7 @@ class HiddenBlock(object):
         self.expected_rho = expected_rho
         self.sparse_beta = sparse_beta
 
-    def _feedforward(self,X):
+    def feedforward(self,X):
         # X: input, [H,S] matrix
         # activation: [H,S]
         activation = expit(X)
@@ -153,6 +153,19 @@ class SparseAutoEncoder(object):
                                          method=method, jac=True, options=options)
 
         self.__assign_weights(result.x)
+
+    def extract_features(self,X,sample_direction="byrow"):
+        # X: [S,F] matrix 
+        # input's output: [H,S] matrix
+        output_from_input = self._input.feedforward(X)
+        activation = expit(output_from_input)
+
+        if sample_direction == "bycolumn":
+            return activation # activation: [H,S] matrix
+        elif sample_direction == "byrow":
+            return activation.T # [S,H] matrix
+        else:
+            raise Exception("unknown sample direction")
 
     def __numeric_gradients(self,X, weights, epsilon):
         total = len(weights)
