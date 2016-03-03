@@ -94,6 +94,48 @@ class OutputBlock(object):
         num_samples = Y.shape[1]
         return (self.activation - Y)  / (float(num_samples))
 
+class LogisticRegression(object):
+    """
+    ignore the hidden layer, no nonlinear feature mapping, just a Multi-class Logistic Regression
+    """
+
+    def __init__(self,n_features,n_output,l2):
+        self._input = InputBlock(n_features,n_output,l2=l2)
+        self._output = OutputBlock()
+        self._n_output = n_output
+
+    def predict_proba(self,X):
+        output_from_input = self._input.feedforward(X)
+        probas = self._output.feedforward(output_from_input) # [O,S] matrix
+        return probas.T # [S,O] matrix
+
+    def predict(self,X):
+        predicted_probas = self.predict_proba(X)# [S,O] matrix
+        return predicted_probas.argmax(axis=1)
+
+    def __cost_gradients(self,weights):
+        self._input.W = weights.reshape(self._input.W.shape)
+
+        # ------------ feedforward to get cost
+        output_from_input = self._input.feedforward(self.X)
+        self._output.feedforward(output_from_input)
+        cost = self._output.cost(self.Yohe) + self._input.penalty() 
+        
+        # ------------ backpropagate to get gradients
+        grad_output_input = self._output.backpropagate(self.Yohe) # gradient on output_block's input
+        self._input.backpropagate(grad_output_input)
+        
+        return cost,self._input.grad_cost_w.flatten()
+
+    def fit(self,X,y,method="L-BFGS-B",maxiter=400):
+        self.X = X
+        self.Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
+
+        options = {'maxiter': maxiter, 'disp': True}
+        result = scipy.optimize.minimize(self.__cost_gradients, self._input.W.flatten(), method=method, jac=True, options=options)
+
+        self._input.W = result.x.reshape(self._input.W.shape)
+
 class NeuralNetwork(object):
 
     def __init__(self,n_features,n_hidden,n_output,l2):
