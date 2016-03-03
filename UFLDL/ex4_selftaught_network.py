@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import mnistdatas
+import commfuncs
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
 from sparse_autoencoder import SparseAutoEncoder
@@ -13,13 +14,20 @@ class SelfTaughtNetwork(object):
         self.sae = SparseAutoEncoder(n_features,n_hidden,params["sae_l2"],params["expected_rho"],params["sparse_beta"])
         self.lr = LogisticRegression(n_hidden,n_output,params["lr_l2"])
 
-    def learn_features(self,Xunlabeled,maxiter=400):
+    def pretrain_unlabeled(self,Xunlabeled,maxiter=400):
         self.sae.fit(Xunlabeled,maxiter=maxiter)
         self.sae.visualize_meta_features()
 
-    def fit(self,X,y,maxiter=400):
+    def pretrain_labeled(self,X,y,maxiter=400):
         hidden_features = self.sae.feedforward(X,"byrow")
         self.lr.fit(hidden_features,y,maxiter=maxiter)
+
+    def __cost_gradients(self,weights):
+        offset = 0
+        offset,self.sae._input.W = commfuncs.extract_param_matrix(weights,offset,self.sae._input.W)
+
+    def fine_tune(self,X,y,maxiter=400):
+        pass
 
     def predict(self,X):
         hidden_features = self.sae.feedforward(X,"byrow")

@@ -70,7 +70,7 @@ class OutputBlock(object):
         return gradient wrt inputs: [O,S] matrix
         """
         num_samples = Y.shape[1]
-        return (self.activation - Y)  / (float(num_samples))
+        return (self.activation - Y) / (float(num_samples))
 
 class LogisticRegression(object):
     """
@@ -91,18 +91,24 @@ class LogisticRegression(object):
         predicted_probas = self.predict_proba(X)# [S,O] matrix
         return predicted_probas.argmax(axis=1)
 
+    def feedforward_backpropagate(self,X,Yohe):
+        """
+        since normally this block is the final block, so it is more convenient to combine feedforward and backpropagate together
+        """
+        # ------------ feedforward to get cost
+        output_from_input = self._input.feedforward(X)
+        self._output.feedforward(output_from_input)
+        cost = self._output.cost(Yohe) + self._input.penalty() 
+
+        # ------------ backpropagate to get gradients
+        grad_output_input = self._output.backpropagate(Yohe) # gradient on output_block's input
+        grad_input_input = self._input.backpropagate(grad_output_input) # gradient on input block's input
+
+        return cost,grad_input_input
+
     def __cost_gradients(self,weights):
         self._input.W = weights.reshape(self._input.W.shape)
-
-        # ------------ feedforward to get cost
-        output_from_input = self._input.feedforward(self.X)
-        self._output.feedforward(output_from_input)
-        cost = self._output.cost(self.Yohe) + self._input.penalty() 
-        
-        # ------------ backpropagate to get gradients
-        grad_output_input = self._output.backpropagate(self.Yohe) # gradient on output_block's input
-        self._input.backpropagate(grad_output_input)
-        
+        cost,_ = self.feedforward_backpropagate(self.X,self.Yohe)
         return cost,self._input.grad_cost_w.flatten()
 
     def fit(self,X,y,method="L-BFGS-B",maxiter=400):
