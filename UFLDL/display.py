@@ -36,7 +36,7 @@ def visualize_predicted_digits(X,ytrue,ypredict,nrows=5,ncols=5):
 # opt_graycolor: whether we use gray as the heat map. Default is true.
 # opt_colmajor: you can switch convention to row major for A. In that
 # case, each row of A is a filter. Default value is false.
-def display_image_patches(A, filename='weights.png',direction="bycolumn"):
+def display_image_patches(A, filename=None,direction="bycolumn"):
     if direction == "byrow":
         A = A.T
 
@@ -74,7 +74,10 @@ def display_image_patches(A, filename='weights.png',direction="bycolumn"):
                     A[:, k].reshape(sz, sz) / np.max(np.abs(A))
             k += 1
 
-    plt.imsave(filename, image, cmap=matplotlib.cm.gray)
+    if filename is None:
+        plt.imshow(image,cmap=matplotlib.cm.gray)
+    else:     
+        plt.imsave(filename, image, cmap=matplotlib.cm.gray)
 
 
 def display_color_network(A, filename='weights.png'):

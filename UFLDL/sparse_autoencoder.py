@@ -205,7 +205,7 @@ class SparseAutoEncoder(object):
         else:                        
             raise Exception('!!! PROBLEM: relative error=%e' % relative_error)
 
-    def visualize_meta_features(self,pic_name):
+    def visualize_meta_features(self,pic_name=None):
         # W is a [H,F+1] matrix
         meta_features = self._input.W[:,1:].transpose() # [F,H] matrix
         # display_image_patch will treat each column as a single image patch

@@ -45,6 +45,9 @@
     <Compile Include="sparse_autoencoder.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ex4_selftaught_network.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="UFLDL.py" />
     <Compile Include="pca.py">
       <SubType>Code</SubType>
