@@ -130,8 +130,8 @@ class NeuralNetwork(object):
 
     def __assign_weights(self,weights):
         offset = 0
-        offset,self._input.W = commfuncs.extract_param_matrix(weights,offset,self._input.W)
-        offset,self._hidden.W = commfuncs.extract_param_matrix(weights,offset,self._hidden.W)
+        offset = commfuncs.extract_weights(self._input,weights,offset)
+        offset = commfuncs.extract_weights(self._hidden,weights,offset)
         assert offset == len(weights)
 
     def __cost(self,weights,X,Y):

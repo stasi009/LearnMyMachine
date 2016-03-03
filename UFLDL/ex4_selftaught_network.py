@@ -24,7 +24,7 @@ class SelfTaughtNetwork(object):
 
     def __cost_gradients(self,weights):
         offset = 0
-        offset,self.sae._input.W = commfuncs.extract_param_matrix(weights,offset,self.sae._input.W)
+        offset = commfuncs.extract_weights(self.sae._input, weights,offset)
 
     def fine_tune(self,X,y,maxiter=400):
         pass
