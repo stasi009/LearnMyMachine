@@ -154,7 +154,8 @@ class SparseAutoEncoder(object):
 
         self.__assign_weights(result.x)
 
-    def extract_features(self,X,sample_direction="byrow"):
+    def feedforward(self,X,sample_direction="byrow"):
+        """ regard the SparseAutoEncoder as a single layer """
         # X: [S,F] matrix 
         # input's output: [H,S] matrix
         output_from_input = self._input.feedforward(X)

@@ -18,11 +18,11 @@ class SelfTaughtNetwork(object):
         self.sae.visualize_meta_features()
 
     def fit(self,X,y,maxiter=400):
-        hidden_features = self.sae.extract_features(X,"byrow")
+        hidden_features = self.sae.feedforward(X,"byrow")
         self.lr.fit(hidden_features,y,maxiter=maxiter)
 
     def predict(self,X):
-        hidden_features = self.sae.extract_features(X,"byrow")
+        hidden_features = self.sae.feedforward(X,"byrow")
         return self.lr.predict(hidden_features)
 
 ############################################ load mnist data
