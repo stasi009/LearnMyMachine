@@ -55,6 +55,8 @@ stl = SelfTaughtNetwork(n_features = mnist.Xtrain.shape[1],n_hidden=196,n_output
 stl.learn_features(Xunlabeled,maxiter=400)
 
 ############################################ fit the LR part
+# although set maxiter=200, but since we have high-level features
+# it only loop 76 times and converge and stop
 stl.fit(Xtrain,ytrain,maxiter=200)
 
 ############################################ train accuracy
