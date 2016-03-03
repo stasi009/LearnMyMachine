@@ -42,6 +42,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="mnistdatas.py" />
+    <Compile Include="network_base.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="selftaught_network.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="softmax_network.py">
       <SubType>Code</SubType>
     </Compile>
