@@ -1,9 +1,9 @@
 ﻿
 import numpy as np
-import scipy.optimize 
 from scipy.special import expit
 import commfuncs
 from commblocks import InputBlock
+from network_base import NeuralNetworkBase
 import display
 
 class HiddenBlock(object):
@@ -24,8 +24,9 @@ class HiddenBlock(object):
         activation = expit(X)
         
         # rho_hat: actual average activation,[H] vector
-        # !!! No need to fix to boundary
-        # !!! touching boundary only happens when the input isn't properly normalized/scaled
+        # !!!  No need to fix to boundary
+        # !!!  touching boundary only happens when the input isn't properly
+        # normalized/scaled
         self.rho_hat = np.mean(activation,axis=1)
 
         # self.activation: [H+1,S]
@@ -84,25 +85,25 @@ class OutputBlock(object):
         num_samples = Y.shape[1]
         return (self.activation - Y) * self.activation * (1 - self.activation) / (float(num_samples))
 
-class SparseAutoEncoder(object):
+class SparseAutoEncoder(NeuralNetworkBase):
 
     def __init__(self,n_features,n_hidden,l2,expected_rho,sparse_beta):
         self._input = InputBlock(n_features,n_hidden,l2=l2)
         self._hidden = HiddenBlock(n_hidden,n_features,l2=l2,expected_rho=expected_rho,sparse_beta=sparse_beta)
         self._output = OutputBlock()
 
-    def __assign_weights(self,weights):
+    def _assign_weights(self,weights):
         offset = 0
         offset = commfuncs.extract_weights(self._input,weights,offset)
         offset = commfuncs.extract_weights(self._hidden,weights,offset)
         assert offset == len(weights)
 
-    def __cost(self,weights,X,Y):
+    def _cost(self,weights,X,Y):
         """
         X: [S,F]
         Y: [O,S]
         """
-        self.__assign_weights(weights)
+        self._assign_weights(weights)
 
         output_from_input = self._input.feedforward(X)
         output_from_hidden = self._hidden.feedforward(output_from_input)
@@ -110,9 +111,9 @@ class SparseAutoEncoder(object):
 
         return self._output.cost(Y) + self._input.penalty() + self._hidden.penalty()
 
-    def __cost_gradients(self,weights):
+    def _cost_gradients(self,weights):
         # ------------ feedforward to get cost
-        cost = self.__cost(weights,self.X,self.X.T)
+        cost = self._cost(weights,self.X,self.X.T)
         
         # ------------ backpropagate to get gradients
         grad_output_input = self._output.backpropagate(self.X.T) # gradient on output_block's input
@@ -123,18 +124,14 @@ class SparseAutoEncoder(object):
 
     def weights_vector(self): return np.r_[self._input.W.flatten(),self._hidden.W.flatten()]
 
-    def fit(self,X,method="L-BFGS-B",maxiter=400):
-        self.X = X
-
-        options = {'maxiter': maxiter, 'disp': True}
-        result = scipy.optimize.minimize(self.__cost_gradients, self.weights_vector(), 
-                                         method=method, jac=True, options=options)
-
-        self.__assign_weights(result.x)
+    # since Python doesn't support overload, I have to provide a convenient
+    # method to simplify the API
+    def fit_self(self,X,method="L-BFGS-B",maxiter=400):
+        self.fit(X,X.T,method=method,maxiter=maxiter)
 
     def feedforward(self,X,sample_direction="byrow"):
         """ regard the SparseAutoEncoder as a single layer """
-        # X: [S,F] matrix 
+        # X: [S,F] matrix
         # input's output: [H,S] matrix
         output_from_input = self._input.feedforward(X)
         activation = expit(output_from_input)
@@ -155,44 +152,6 @@ class SparseAutoEncoder(object):
             return self._input.backpropagate(grad_cost_output).T
         else:
             raise Exception("unknown sample direction")
-
-    def __numeric_gradients(self,X, weights, epsilon):
-        total = len(weights)
-        gradients = np.zeros(total)
-
-        for index in xrange(total):
-            old_weight = weights[index]
-
-            weights[index] += epsilon
-            cost_plus = self.__cost(weights,X,X.T)
-
-            weights[index] -= 2 * epsilon
-            cost_minus = self.__cost(weights,X,X.T)
-
-            gradients[index] = (cost_plus - cost_minus) / (2 * epsilon)
-            weights[index] = old_weight
-            # print "%d/%d numeric gradients, %3.2f%% completes" % (index + 1,total,(index + 1) * 100.0 / total)
-
-        return gradients
-
-    def check_gradients(self,X, weights, epsilon=1e-4):
-        self.X = X
-        cost, analytic_gradients = self.__cost_gradients(weights)
-
-        numeric_gradients = self.__numeric_gradients(X,weights,epsilon)
-        # print "gradients, 1st column is analytic, 2nd column is numeric: \n%s" % (np.c_[analytic_gradients,numeric_gradients])
-
-        norm_difference = np.linalg.norm(numeric_gradients - analytic_gradients)
-        norm_numeric = np.linalg.norm(numeric_gradients)
-        norm_analytic = np.linalg.norm(analytic_gradients)
-        relative_error = norm_difference / (norm_numeric + norm_analytic)
-
-        if relative_error <= 1e-7:   
-            print('    OK:      relative error=%e' % relative_error)
-        elif relative_error <= 1e-4:      
-            print('*** WARNING: relative error=%e' % relative_error)
-        else:                        
-            raise Exception('!!! PROBLEM: relative error=%e' % relative_error)
 
     def visualize_meta_features(self,pic_name=None):
         # W is a [H,F+1] matrix
