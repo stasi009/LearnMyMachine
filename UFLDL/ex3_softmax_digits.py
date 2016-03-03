@@ -3,7 +3,7 @@ import cPickle
 import numpy as np
 import mnistdatas
 from sklearn.metrics import accuracy_score
-from softmax_network import NeuralNetwork,LogisticRegression
+from softmax_network import NeuralNetwork,SoftmaxRegressor
 import display
 
 # ----------------- load mnist data
@@ -29,7 +29,7 @@ def check_gradients():
 ### Test Accuracy: 92.65%
 def train_predict_logisticregression():
     ########################################## train
-    lr = LogisticRegression(n_features = mnist.Xtrain.shape[1],n_output=10,l2=1e-4)
+    lr = SoftmaxRegressor(n_features = mnist.Xtrain.shape[1],n_output=10,l2=1e-4)
     lr.fit(mnist.Xtrain,mnist.ytrain,maxiter=100)
 
     ########################################## accuracy on train data

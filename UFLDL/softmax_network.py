@@ -72,7 +72,7 @@ class OutputBlock(object):
         num_samples = Y.shape[1]
         return (self.activation - Y) / (float(num_samples))
 
-class LogisticRegression(object):
+class SoftmaxRegressor(object):
     """
     ignore the hidden layer, no nonlinear feature mapping, just a Multi-class Logistic Regression
     """
@@ -96,8 +96,7 @@ class LogisticRegression(object):
         since normally this block is the final block, so it is more convenient to combine feedforward and backpropagate together
         """
         # ------------ feedforward to get cost
-        output_from_input = self._input.feedforward(X)
-        self._output.feedforward(output_from_input)
+        self.predict_proba(X)
         cost = self._output.cost(Yohe) + self._input.penalty() 
 
         # ------------ backpropagate to get gradients
