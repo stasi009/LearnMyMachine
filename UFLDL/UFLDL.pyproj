@@ -35,6 +35,9 @@
     <Compile Include="ex3_softmax_digits.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="commblocks.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="matloader.py">
       <SubType>Code</SubType>
     </Compile>
