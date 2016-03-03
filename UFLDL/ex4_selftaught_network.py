@@ -3,35 +3,9 @@ import numpy as np
 import pandas as pd
 import mnistdatas
 import commfuncs
+from selftaught_network import SelfTaughtNetwork
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import train_test_split
-from sparse_autoencoder import SparseAutoEncoder
-from softmax_network import LogisticRegression
-
-class SelfTaughtNetwork(object):
-
-    def __init__(self,n_features,n_hidden,n_output,params):
-        self.sae = SparseAutoEncoder(n_features,n_hidden,params["sae_l2"],params["expected_rho"],params["sparse_beta"])
-        self.lr = LogisticRegression(n_hidden,n_output,params["lr_l2"])
-
-    def pretrain_unlabeled(self,Xunlabeled,maxiter=400):
-        self.sae.fit(Xunlabeled,maxiter=maxiter)
-        self.sae.visualize_meta_features()
-
-    def pretrain_labeled(self,X,y,maxiter=400):
-        hidden_features = self.sae.feedforward(X,"byrow")
-        self.lr.fit(hidden_features,y,maxiter=maxiter)
-
-    def __cost_gradients(self,weights):
-        offset = 0
-        offset = commfuncs.extract_weights(self.sae._input, weights,offset)
-
-    def fine_tune(self,X,y,maxiter=400):
-        pass
-
-    def predict(self,X):
-        hidden_features = self.sae.feedforward(X,"byrow")
-        return self.lr.predict(hidden_features)
 
 ############################################ load mnist data
 mnist = mnistdatas.MnistDataset("../datas")

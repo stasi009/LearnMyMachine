@@ -147,14 +147,12 @@ class SparseAutoEncoder(object):
             raise Exception("unknown sample direction")
 
     def backpropagate(self,grad_cost_output,sample_direction="byrow"):
-        """
-        if sample_direction == "byrow":    grad_cost_output: [S,H]
-        if sample_direction == "bycolumn": grad_cost_output: [H,S]
-        """
         if sample_direction == "byrow":
-            return self._input.backpropagate(grad_cost_output.T)# we need [H,S]
+            # grad_cost_output is [S,H], but we need [H,S]
+            return self._input.backpropagate(grad_cost_output.T)
         elif sample_direction == "bycolumn":
-            return self._input.backpropagate(grad_cost_output)
+            # output is [S,F], but we need [F,S]
+            return self._input.backpropagate(grad_cost_output).T
         else:
             raise Exception("unknown sample direction")
 
