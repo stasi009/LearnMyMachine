@@ -47,7 +47,7 @@ def check_gradients():
     Yohe = commfuncs.encode_digits(y,n_output)
     stl.check_gradients(X,Yohe,weights)
     
-def check_performance(stl):   
+def check_accuracy(stl):   
     # ------ train accuracy
     predicted_ytrain = stl.predict(Xtrain)
     print "Train Accuracy: %3.2f%%" % (accuracy_score(ytrain,predicted_ytrain) * 100)
@@ -66,11 +66,11 @@ def pretain_finetune():
 
     # Train Accuracy: 98.63%
     # Test Accuracy: 98.41%
-    check_performance(stl)
+    check_accuracy(stl)
 
     # ------ fine tune
     stl.fine_tune(Xtrain,ytrain)
 
     # Train Accuracy: 100%
     # Test Accuracy: 99.02%
-    check_performance(stl)
+    check_accuracy(stl)
