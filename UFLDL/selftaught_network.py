@@ -13,8 +13,8 @@ class SelfTaughtNetwork(NeuralNetworkBase):
 
     def __init__(self,n_features,n_hidden,n_output,params):
         self.sae = SparseAutoEncoder(n_features,n_hidden,params["sae_l2"],params["expected_rho"],params["sparse_beta"])
-        self.lr = SoftmaxRegressor(n_hidden,n_output,params["lr_l2"])
-        self.weighted_blocks = [self.sae._input,self.lr._input]
+        self.softmax = SoftmaxRegressor(n_hidden,n_output,params["softmax_l2"])
+        self.weighted_blocks = [self.sae._input,self.softmax._input]
         self._n_output = n_output
 
     def pretrain_unlabeled(self,Xunlabeled,maxiter=400):
@@ -22,29 +22,35 @@ class SelfTaughtNetwork(NeuralNetworkBase):
         self.sae.visualize_meta_features()
 
     def pretrain_labeled(self,X,y,maxiter=400):
-        hidden_features = self.sae.feedforward(X,"byrow")
-        self.lr.fit(hidden_features,y,maxiter=maxiter)
+        hidden_features = self.sae.feedforward(X)
+        self.softmax.fit(hidden_features,y,maxiter=maxiter)
 
     def predict_proba(self,X):
-        hidden_features = self.sae.feedforward(X,"byrow")
-        return self.lr.predict_proba(hidden_features)
+        hidden_features = self.sae.feedforward(X)
+        return self.softmax.predict_proba(hidden_features)
 
     def _cost(self,X,Yohe):
-        self.__assign_weights(weights)
-        sae_output = self.sae.feedforward(X)
-        return self.lr.feedforward(sae_output,Yohe)
+        sae_output = self.sae.feedforward(X)# [S,H] matrix
+        # penalty only contains the weight decay from softmax, so softmax._cost will be enough
+        return self.softmax._cost(sae_output,Yohe)
 
     def _gradients(self,Y):
-        grad_lr_input = self.lr.backpropagate(Y)
-        self.sae.backpropagate(grad_lr_input)
+        grad_softmax_input = self.softmax._gradients(Y)# [S,H] matrix
+        self.sae.backpropagate(grad_softmax_input) # return [S,F] matrix
 
     def fine_tune(self,X,y,maxiter=400):
-        self.X = X
-        self.Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
+        old_sae_l2 = self.sae._input.l2
+        self.sae._input.l2 = 0 # during fine tune, no weight decay on SparseAutoEncoder
 
-        options = {'maxiter': maxiter, 'disp': True}
-        weights0 = np.r_[self.sae._input.W.flatten(),self.lr._input.W.flatten()]
-        result = scipy.optimize.minimize(self.__cost_gradients, weights0, method="L-BFGS-B", jac=True, options=options)
+        Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
+        self._fit(X,Yohe,maxiter=maxiter)
 
-        self.__assign_weights(result.x)
+        self.sae._input.l2 = old_sae_l2 # restore
 
+    def check_gradients(self, X, Y, weights, epsilon = 0.0001):
+        old_sae_l2 = self.sae._input.l2
+        self.sae._input.l2 = 0 # during fine tune, no weight decay on SparseAutoEncoder
+
+        super(SelfTaughtNetwork, self).check_gradients(X, Y, weights, epsilon)
+
+        self.sae._input.l2 = old_sae_l2 # restore
