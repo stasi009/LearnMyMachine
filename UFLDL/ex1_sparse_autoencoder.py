@@ -26,7 +26,7 @@ def check_gradients():
     n_hidden = 20
     sae = sparse_autoencoder.SparseAutoEncoder(n_features,n_hidden,l2=3e-3,expected_rho=0.1,sparse_beta=3)
     
-    weights = sae.weights_vector()
+    weights = sae.all_weights()
     sae.check_gradients(X,X.T,weights)    
 
 def fit_display():
@@ -37,7 +37,7 @@ def fit_display():
     n_hidden = 196
     sae = sparse_autoencoder.SparseAutoEncoder(n_features,n_hidden,l2=3e-3,expected_rho=0.1,sparse_beta=3)
 
-    sae.fit_self(Xtrain,maxiter=400)
+    sae.fit(Xtrain,maxiter=400)
     sae.visualize_meta_features("SparseAutoEncoder_HiddenFeatures.png")
 
 

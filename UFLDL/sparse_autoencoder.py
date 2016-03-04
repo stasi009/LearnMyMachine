@@ -90,44 +90,24 @@ class SparseAutoEncoder(NeuralNetworkBase):
     def __init__(self,n_features,n_hidden,l2,expected_rho,sparse_beta):
         self._input = InputBlock(n_features,n_hidden,l2=l2)
         self._hidden = HiddenBlock(n_hidden,n_features,l2=l2,expected_rho=expected_rho,sparse_beta=sparse_beta)
+        self.blocks = [self._input,self._hidden]
         self._output = OutputBlock()
 
-    def _assign_weights(self,weights):
-        offset = 0
-        offset = commfuncs.extract_weights(self._input,weights,offset)
-        offset = commfuncs.extract_weights(self._hidden,weights,offset)
-        assert offset == len(weights)
-
-    def _cost(self,weights,X,Y):
-        """
-        X: [S,F]
-        Y: [O,S]
-        """
-        self._assign_weights(weights)
-
+    def _cost(self,X,Y):
         output_from_input = self._input.feedforward(X)
         output_from_hidden = self._hidden.feedforward(output_from_input)
         self._output.feedforward(output_from_hidden)
-
         return self._output.cost(Y) + self._input.penalty() + self._hidden.penalty()
 
-    def _cost_gradients(self,weights):
-        # ------------ feedforward to get cost
-        cost = self._cost(weights,self.X,self.X.T)
-        
-        # ------------ backpropagate to get gradients
+    def _gradients(self,Y):
         grad_output_input = self._output.backpropagate(self.X.T) # gradient on output_block's input
         grad_hidden_input = self._hidden.backpropagate(grad_output_input) # gradient on hidden_block's input
         self._input.backpropagate(grad_hidden_input)
-        
-        return cost,np.r_[self._input.grad_cost_w.flatten(),self._hidden.grad_cost_w.flatten()]
-
-    def weights_vector(self): return np.r_[self._input.W.flatten(),self._hidden.W.flatten()]
 
     # since Python doesn't support overload, I have to provide a convenient
     # method to simplify the API
-    def fit_self(self,X,method="L-BFGS-B",maxiter=400):
-        self.fit(X,X.T,method=method,maxiter=maxiter)
+    def fit(self,X,method="L-BFGS-B",maxiter=400):
+        self._fit(X,X.T,method=method,maxiter=maxiter)
 
     def feedforward(self,X,sample_direction="byrow"):
         """ regard the SparseAutoEncoder as a single layer """
