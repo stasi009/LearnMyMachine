@@ -109,29 +109,21 @@ class SparseAutoEncoder(NeuralNetworkBase):
     def fit(self,X,method="L-BFGS-B",maxiter=400):
         self._fit(X,X.T,method=method,maxiter=maxiter)
 
-    def feedforward(self,X,sample_direction="byrow"):
-        """ regard the SparseAutoEncoder as a single layer """
+    def feedforward(self,X):
+        """ regard the SparseAutoEncoder as a single block """
         # X: [S,F] matrix
         # input's output: [H,S] matrix
         output_from_input = self._input.feedforward(X)
-        activation = expit(output_from_input)
+        self.activation = expit(output_from_input).T # activation: [S,H] matrix
+        return self.activation
 
-        if sample_direction == "bycolumn":
-            return activation # activation: [H,S] matrix
-        elif sample_direction == "byrow":
-            return activation.T # [S,H] matrix
-        else:
-            raise Exception("unknown sample direction")
-
-    def backpropagate(self,grad_cost_output,sample_direction="byrow"):
-        if sample_direction == "byrow":
-            # grad_cost_output is [S,H], but we need [H,S]
-            return self._input.backpropagate(grad_cost_output.T)
-        elif sample_direction == "bycolumn":
-            # output is [S,F], but we need [F,S]
-            return self._input.backpropagate(grad_cost_output).T
-        else:
-            raise Exception("unknown sample direction")
+    def backpropagate(self,grad_hidden_output):
+        # grad_hidden_output is gradient w.r.t hidden's output, [S,H] matrix
+        # self.activation: [S,H] matrix
+        # grad_input_output is gradients w.r.t input's output, [S,H] matrix
+        grad_input_output = grad_hidden_output * self.activation * (1 - self.activation)# [S,H] matrix
+        # backpropagate expects [H,S] matrix matrix, so transpose
+        return self._input.backpropagate(grad_input_output.T)
 
     def visualize_meta_features(self,pic_name=None):
         # W is a [H,F+1] matrix
