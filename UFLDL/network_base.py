@@ -12,6 +12,7 @@ class NeuralNetworkBase(object):
         raise NotImplementedError("to be overriden in derived class")
 
     def predict_proba(self,X):
+        """ expect returning [S,O] matrix """
         raise NotImplementedError("to be overriden in derived class")
 
     def _numeric_gradients(self,X,Y, weights, epsilon):
