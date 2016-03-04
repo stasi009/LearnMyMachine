@@ -67,14 +67,14 @@ class NeuralNetworkBase(object):
 
     def _assign_weights(self,weights):
         offset = 0
-        for block in self.blocks:
+        for block in self.weighted_blocks:
             next_offset = offset + block.W.size
             block.W = weights[offset:next_offset].reshape(block.W.shape)
             offset = next_offset
         assert offset == len(weights)
 
     def all_weights(self):
-        return np.concatenate( [block.W.flatten() for block in self.blocks] )
+        return np.concatenate( [block.W.flatten() for block in self.weighted_blocks] )
 
     def _cost_gradients(self,weights):
         self._assign_weights(weights)
@@ -85,7 +85,7 @@ class NeuralNetworkBase(object):
         # back propagate
         self._gradients(self.Y)
 
-        return cost,np.concatenate([block.grad_cost_w.flatten() for block in self.blocks])
+        return cost,np.concatenate([block.grad_cost_w.flatten() for block in self.weighted_blocks])
 
     def _fit(self,X,Y,method="L-BFGS-B",maxiter=400):
         self.X = X

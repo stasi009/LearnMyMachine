@@ -90,7 +90,7 @@ class SparseAutoEncoder(NeuralNetworkBase):
     def __init__(self,n_features,n_hidden,l2,expected_rho,sparse_beta):
         self._input = InputBlock(n_features,n_hidden,l2=l2)
         self._hidden = HiddenBlock(n_hidden,n_features,l2=l2,expected_rho=expected_rho,sparse_beta=sparse_beta)
-        self.blocks = [self._input,self._hidden]
+        self.weighted_blocks = [self._input,self._hidden]
         self._output = OutputBlock()
 
     def _cost(self,X,Y):
