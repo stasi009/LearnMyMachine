@@ -4,6 +4,7 @@ import scipy.optimize
 from scipy.special import expit
 import commfuncs
 from commblocks import InputBlock
+from network_base import NeuralNetworkBase
 
 class HiddenBlock(object):
     def __init__(self,n_hidden,n_output,l2):
@@ -72,101 +73,59 @@ class OutputBlock(object):
         num_samples = Y.shape[1]
         return (self.activation - Y) / (float(num_samples))
 
-class SoftmaxRegressor(object):
+class SoftmaxRegressor(NeuralNetworkBase):
     """
     ignore the hidden layer, no nonlinear feature mapping, just a Multi-class Logistic Regression
     """
-
     def __init__(self,n_features,n_output,l2):
         self._input = InputBlock(n_features,n_output,l2=l2)
         self._output = OutputBlock()
         self._n_output = n_output
+        self.weighted_blocks = [self._input]
 
     def predict_proba(self,X):
         output_from_input = self._input.feedforward(X)
         probas = self._output.feedforward(output_from_input) # [O,S] matrix
         return probas.T # [S,O] matrix
 
-    def predict(self,X):
-        predicted_probas = self.predict_proba(X)# [S,O] matrix
-        return predicted_probas.argmax(axis=1)
-
-    def feedforward_backpropagate(self,X,Yohe):
-        """
-        since normally this block is the final block, so it is more convenient to combine feedforward and backpropagate together
-        """
+    def _cost(self,X,Y):
         # ------------ feedforward to get cost
         self.predict_proba(X)
-        cost = self._output.cost(Yohe) + self._input.penalty() 
+        return self._output.cost(Y) + self._input.penalty() 
 
+    def _gradients(self,Yohe):
         # ------------ backpropagate to get gradients
         grad_output_input = self._output.backpropagate(Yohe) # gradient on output_block's input
         grad_input_input = self._input.backpropagate(grad_output_input) # gradient on input block's input
-
-        return cost,grad_input_input
-
-    def __cost_gradients(self,weights):
-        self._input.W = weights.reshape(self._input.W.shape)
-        cost,_ = self.feedforward_backpropagate(self.X,self.Yohe)
-        return cost,self._input.grad_cost_w.flatten()
+        return grad_input_input
 
     def fit(self,X,y,method="L-BFGS-B",maxiter=400):
-        self.X = X
-        self.Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
+        Yohe = commfuncs.encode_digits(y,self._n_output)
+        return self._fit(X,Yohe,method=method,maxiter=maxiter)
 
-        options = {'maxiter': maxiter, 'disp': True}
-        result = scipy.optimize.minimize(self.__cost_gradients, self._input.W.flatten(), method=method, jac=True, options=options)
-
-        self._input.W = result.x.reshape(self._input.W.shape)
-
-class NeuralNetwork(object):
+class NeuralNetwork(NeuralNetworkBase):
 
     def __init__(self,n_features,n_hidden,n_output,l2):
         self._input = InputBlock(n_features,n_hidden,l2=l2)
         self._hidden = HiddenBlock(n_hidden,n_output,l2=l2)
         self._output = OutputBlock()
+        self.weighted_blocks = [self._input,self._hidden]
         self._n_output = n_output
 
-    def __assign_weights(self,weights):
-        offset = 0
-        offset = commfuncs.extract_weights(self._input,weights,offset)
-        offset = commfuncs.extract_weights(self._hidden,weights,offset)
-        assert offset == len(weights)
-
-    def __cost(self,weights,X,Y):
+    def _cost(self,X,Y):
         """
         X: [S,F]
         Y: [O,S]
         """
-        self.__assign_weights(weights)
-
         output_from_input = self._input.feedforward(X)
         output_from_hidden = self._hidden.feedforward(output_from_input)
         self._output.feedforward(output_from_hidden)
-
         return self._output.cost(Y) + self._input.penalty() + self._hidden.penalty()
 
-    def __cost_gradients(self,weights):
-        # ------------ feedforward to get cost
-        cost = self.__cost(weights,self.X,self.Yohe)
-        
-        # ------------ backpropagate to get gradients
-        grad_output_input = self._output.backpropagate(self.Yohe) # gradient on output_block's input
+    def _gradients(self,Y):
+        grad_output_input = self._output.backpropagate(Y) # gradient on output_block's input
         grad_hidden_input = self._hidden.backpropagate(grad_output_input) # gradient on hidden_block's input
         self._input.backpropagate(grad_hidden_input)
-        
-        return cost,np.r_[self._input.grad_cost_w.flatten(),self._hidden.grad_cost_w.flatten()]
-
-    def weights_vector(self): return np.r_[self._input.W.flatten(),self._hidden.W.flatten()]
-
-    def fit(self,X,y,method="L-BFGS-B",maxiter=400):
-        self.X = X
-        self.Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
-
-        options = {'maxiter': maxiter, 'disp': True}
-        result = scipy.optimize.minimize(self.__cost_gradients, self.weights_vector(), method=method, jac=True, options=options)
-
-        self.__assign_weights(result.x)
 
     def predict_proba(self,X):
         output_from_input = self._input.feedforward(X)
@@ -174,48 +133,11 @@ class NeuralNetwork(object):
         probas = self._output.feedforward(output_from_hidden) # [O,S] matrix
         return probas.T # [S,O] matrix
 
-    def predict(self,X):
-        predicted_probas = self.predict_proba(X)# [S,O] matrix
-        return predicted_probas.argmax(axis=1)
+    def fit(self,X,y,method="L-BFGS-B",maxiter=400):
+        Yohe = commfuncs.encode_digits(y,self._n_output)
+        return self._fit(X,Yohe,method=method,maxiter=maxiter)
 
-    def __numeric_gradients(self,X,Yohe, weights, epsilon):
-        total = len(weights)
-        gradients = np.zeros(total)
-
-        for index in xrange(total):
-            old_weight = weights[index]
-
-            weights[index] += epsilon
-            cost_plus = self.__cost(weights,X,Yohe)
-
-            weights[index] -= 2 * epsilon
-            cost_minus = self.__cost(weights,X,Yohe)
-
-            gradients[index] = (cost_plus - cost_minus) / (2 * epsilon)
-            weights[index] = old_weight
-            # print "%d/%d numeric gradients, %3.2f%% completes" % (index + 1,total,(index + 1) * 100.0 / total)
-
-        return gradients
-
-    def check_gradients(self,X,y, weights, epsilon=1e-4):
-        self.X = X
-        self.Yohe = commfuncs.encode_digits(y,self._n_output)# Yohe is a [O,S] matrix
-        cost, analytic_gradients = self.__cost_gradients(weights)
-
-        numeric_gradients = self.__numeric_gradients(X,self.Yohe,weights,epsilon)
-        # print "gradients, 1st column is analytic, 2nd column is numeric: \n%s" % (np.c_[analytic_gradients,numeric_gradients])
-
-        norm_difference = np.linalg.norm(numeric_gradients - analytic_gradients)
-        norm_numeric = np.linalg.norm(numeric_gradients)
-        norm_analytic = np.linalg.norm(analytic_gradients)
-        relative_error = norm_difference / (norm_numeric + norm_analytic)
-
-        if relative_error <= 1e-7:   
-            print('    OK:      relative error=%e' % relative_error)
-        elif relative_error <= 1e-4:      
-            print('*** WARNING: relative error=%e' % relative_error)
-        else:                        
-            raise Exception('!!! PROBLEM: relative error=%e' % relative_error)
+    
 
     
 

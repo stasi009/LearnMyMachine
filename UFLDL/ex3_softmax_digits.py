@@ -5,6 +5,7 @@ import mnistdatas
 from sklearn.metrics import accuracy_score
 from softmax_network import NeuralNetwork,SoftmaxRegressor
 import display
+import commfuncs
 
 # ----------------- load mnist data
 mnist = mnistdatas.MnistDataset("../datas")
@@ -16,18 +17,20 @@ mnist.random_plot_same_digits(9)
 def check_gradients():
     n_samples = 30
     n_features = 50
+    n_output = 10
     X = np.random.uniform(0,1,(n_samples,n_features))
-    y = np.random.choice(10,n_samples)
+    y = np.random.choice(n_output,n_samples)
 
     n_hidden = 20
-    network = Network(n_features,n_hidden,n_output=10,l2=3e-3)
+    network = NeuralNetwork(n_features,n_hidden,n_output=n_output,l2=3e-3)
     
-    weights = network.weights_vector()
-    network.check_gradients(X,y,weights)   
+    weights = network.all_weights()
+    Yohe = commfuncs.encode_digits(y,n_output)
+    network.check_gradients(X,Yohe,weights)   
 
 ### Train Accuracy: 93.32%
 ### Test Accuracy: 92.65%
-def train_predict_logisticregression():
+def train_predict_softmax_regression():
     ########################################## train
     lr = SoftmaxRegressor(n_features = mnist.Xtrain.shape[1],n_output=10,l2=1e-4)
     lr.fit(mnist.Xtrain,mnist.ytrain,maxiter=100)
@@ -42,8 +45,8 @@ def train_predict_logisticregression():
     test_accuracy = accuracy_score(mnist.ytest,predicted_ytest)
     print "Test Accuracy: %3.2f%%"%(test_accuracy * 100) 
     
-### Train Accuracy: 98.77%
-### Test Accuracy: 97.28%
+### Train Accuracy: 98.63%
+### Test Accuracy: 97.35%
 def train_predict_neuralnetwork():
     ########################################## train
     network = NeuralNetwork(n_features = mnist.Xtrain.shape[1],n_hidden=50,n_output=10,l2=1e-4)
