@@ -97,7 +97,7 @@ class SoftmaxRegressor(NeuralNetworkBase):
         # ------------ backpropagate to get gradients
         grad_output_input = self._output.backpropagate(Yohe) # gradient on output_block's input
         grad_input_input = self._input.backpropagate(grad_output_input) # gradient on input block's input
-        return grad_input_input
+        return grad_input_input # [S,F] matrix
 
     def fit(self,X,y,method="L-BFGS-B",maxiter=400):
         Yohe = commfuncs.encode_digits(y,self._n_output)
