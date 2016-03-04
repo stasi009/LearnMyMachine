@@ -34,12 +34,12 @@ params["sparse_beta"] = 3
 params["lr_l2"] = 1e-4
 stl = SelfTaughtNetwork(n_features = mnist.Xtrain.shape[1],n_hidden=196,n_output=5,params=params)
 
-stl.learn_features(Xunlabeled,maxiter=400)
+stl.pretrain_unlabeled(Xunlabeled,maxiter=400)
 
 ############################################ fit the LR part
 # although set maxiter=200, but since we have high-level features
 # it only loop 76 times and converge and stop
-stl.fit(Xtrain,ytrain,maxiter=200)
+stl.pretrain_labeled(Xtrain,ytrain,maxiter=200)
 
 ############################################ train accuracy
 predicted_ytrain = stl.predict(Xtrain)

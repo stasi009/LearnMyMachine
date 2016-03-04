@@ -3,8 +3,9 @@ import numpy as np
 import commfuncs
 from sparse_autoencoder import SparseAutoEncoder
 from softmax_network import SoftmaxRegressor
+from network_base import NeuralNetworkBase
 
-class SelfTaughtNetwork(object):
+class SelfTaughtNetwork(NeuralNetworkBase):
     """
     simple Self-Taught-Learning neural network
     only has one SparseAutoEncoder and one Softmax Regressor
@@ -13,6 +14,7 @@ class SelfTaughtNetwork(object):
     def __init__(self,n_features,n_hidden,n_output,params):
         self.sae = SparseAutoEncoder(n_features,n_hidden,params["sae_l2"],params["expected_rho"],params["sparse_beta"])
         self.lr = SoftmaxRegressor(n_hidden,n_output,params["lr_l2"])
+        self.weighted_blocks = [self.sae._input,self.lr._input]
         self._n_output = n_output
 
     def pretrain_unlabeled(self,Xunlabeled,maxiter=400):
@@ -23,21 +25,18 @@ class SelfTaughtNetwork(object):
         hidden_features = self.sae.feedforward(X,"byrow")
         self.lr.fit(hidden_features,y,maxiter=maxiter)
 
-    def __assign_weights(self,weights):
-        offset = 0
-        offset = commfuncs.extract_weights(self.sae._input, weights,offset)
-        offset = commfuncs.extract_weights(self.lr._input,weights,offset)
-        assert (offset == len(weights))
+    def predict_proba(self,X):
+        hidden_features = self.sae.feedforward(X,"byrow")
+        return self.lr.predict_proba(hidden_features)
 
-    def __cost_gradients(self,weights):
+    def _cost(self,X,Yohe):
         self.__assign_weights(weights)
+        sae_output = self.sae.feedforward(X)
+        return self.lr.feedforward(sae_output,Yohe)
 
-        # feedforward and backpropagate
-        sae_output = self.sae.feedforward(self.X)
-        cost,grad_lr_input = self.lr.feedforward_backpropagate(sae_output,self.Yohe)
+    def _gradients(self,Y):
+        grad_lr_input = self.lr.backpropagate(Y)
         self.sae.backpropagate(grad_lr_input)
-
-        return cost,np.r_[self.sae._input.grad_cost_w.flatten(),self.lr._input.grad_cost_w.flatten()]
 
     def fine_tune(self,X,y,maxiter=400):
         self.X = X
@@ -49,6 +48,3 @@ class SelfTaughtNetwork(object):
 
         self.__assign_weights(result.x)
 
-    def predict(self,X):
-        hidden_features = self.sae.feedforward(X,"byrow")
-        return self.lr.predict(hidden_features)
