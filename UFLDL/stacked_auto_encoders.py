@@ -8,6 +8,7 @@ class StackedAutoEncoderSoftmaxNetwork(NeuralNetworkBase):
 
     def __init__(self,num_neurons,params):
         total_layers = len(num_neurons)
+
         self.sae_l2,expected_rho,sparse_beta = params["sae_l2"],params["expected_rho"],params["sparse_beta"]
         self.saes = [  SparseAutoEncoder(num_neurons[index],num_neurons[index + 1],l2=self.sae_l2,expected_rho=expected_rho,sparse_beta=sparse_beta) for index in xrange(total_layers - 2) ]
         self.softmax = SoftmaxRegressor(num_neurons[total_layers - 2],num_neurons[total_layers - 1],l2=params["softmax_l2"])
