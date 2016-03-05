@@ -123,7 +123,7 @@ class SparseAutoEncoder(NeuralNetworkBase):
         # grad_input_output is gradients w.r.t input's output, [S,H] matrix
         grad_input_output = grad_hidden_output * self.activation * (1 - self.activation)# [S,H] matrix
         # backpropagate expects [H,S] matrix matrix, so transpose
-        return self._input.backpropagate(grad_input_output.T)
+        return self._input.backpropagate(grad_input_output.T)# return [S,F] matrix
 
     def visualize_meta_features(self,pic_name=None):
         # W is a [H,F+1] matrix

@@ -38,6 +38,9 @@
     <Compile Include="commblocks.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ex5_stacked_autoencoders.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="matloader.py">
       <SubType>Code</SubType>
     </Compile>
@@ -55,6 +58,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ex4_selftaught_network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="stacked_auto_encoders.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="UFLDL.py" />
