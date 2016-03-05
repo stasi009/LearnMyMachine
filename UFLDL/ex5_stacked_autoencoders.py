@@ -51,13 +51,13 @@ def pretain_finetune():
     # ------ pre-training
     sae_softmax.pretrain(mnist.Xtrain,mnist.ytrain,maxiter=400)
 
-    # Train Accuracy: 91.34%
-    # Test Accuracy: 91.99%
+    # Train Accuracy: 91.03%
+    # Test Accuracy: 91.72%
     check_accuracy(sae_softmax)
 
     # ------ fine tune
     sae_softmax.finetune(mnist.Xtrain,mnist.ytrain,maxiter=400)
 
     # Train Accuracy: 100%
-    # Test Accuracy: 97.89%
+    # Test Accuracy: 98.03%
     check_accuracy(sae_softmax)
