@@ -12,6 +12,9 @@ mnist.load_test()
 mnist.random_plot_different_digits()
 mnist.random_plot_same_digits(9)
 
+n_features = mnist.Xtrain.shape[1]
+n_output = 10
+
 # ----------------- configurations
 params = {}
 params["sae_l2"] = 3e-3
@@ -42,22 +45,27 @@ def check_accuracy(sae_softmax):
     predicted_ytest = sae_softmax.predict(mnist.Xtest)
     print "Test Accuracy: %3.2f%%" % (accuracy_score(mnist.ytest,predicted_ytest) * 100)
 
-def pretain_finetune():
-    n_features = mnist.Xtrain.shape[1]
-    n_output = 10
-    num_neurons = [n_features,196,196,n_output]
+def pretain_finetune(num_neurons):
     sae_softmax = StackedAutoEncoderSoftmaxNetwork(num_neurons,params=params)
 
     # ------ pre-training
     sae_softmax.pretrain(mnist.Xtrain,mnist.ytrain,maxiter=400)
-
-    # Train Accuracy: 91.03%
-    # Test Accuracy: 91.72%
     check_accuracy(sae_softmax)
 
     # ------ fine tune
     sae_softmax.finetune(mnist.Xtrain,mnist.ytrain,maxiter=400)
-
-    # Train Accuracy: 100%
-    # Test Accuracy: 98.03%
     check_accuracy(sae_softmax)
+
+############### one hidden layer
+# pretraining: Train Accuracy: 96.72%
+# pretraining: Test Accuracy: 96.87%
+# finetune: Train Accuracy: 100.00%
+# finetune: Test Accuracy: 97.76%
+pretrain_finetune([n_features,196,n_output])
+
+############### two hidden layer
+# pretraining: Train Accuracy: 91.03%
+# pretraining: Test Accuracy: 91.72%
+# finetune: Train Accuracy: 100%
+# finetune: Test Accuracy: 98.03%
+pretrain_finetune([n_features,196,196,n_output])
