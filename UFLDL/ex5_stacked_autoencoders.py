@@ -1,4 +1,4 @@
-
+﻿
 import numpy as np
 import mnistdatas
 from sklearn.metrics import accuracy_score
@@ -45,19 +45,19 @@ def check_accuracy(sae_softmax):
 def pretain_finetune():
     n_features = mnist.Xtrain.shape[1]
     n_output = 10
-    num_neurons = [n_features,180,180,n_output]
+    num_neurons = [n_features,196,196,n_output]
     sae_softmax = StackedAutoEncoderSoftmaxNetwork(num_neurons,params=params)
 
     # ------ pre-training
     sae_softmax.pretrain(mnist.Xtrain,mnist.ytrain,maxiter=400)
 
-    # Train Accuracy: 98.63%
-    # Test Accuracy: 98.41%
+    # Train Accuracy: 91.34%
+    # Test Accuracy: 91.99%
     check_accuracy(sae_softmax)
 
     # ------ fine tune
     sae_softmax.finetune(mnist.Xtrain,mnist.ytrain,maxiter=400)
 
     # Train Accuracy: 100%
-    # Test Accuracy: 99.02%
+    # Test Accuracy: 97.89%
     check_accuracy(sae_softmax)

@@ -3,6 +3,7 @@ import numpy as np
 from network_base import NeuralNetworkBase
 from sparse_autoencoder import SparseAutoEncoder
 from softmax_network import SoftmaxRegressor
+import commfuncs
 
 class StackedAutoEncoderSoftmaxNetwork(NeuralNetworkBase):
 
