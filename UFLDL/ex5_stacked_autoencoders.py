@@ -32,3 +32,32 @@ def check_gradients():
     weights = network.all_weights()
     Yohe = commfuncs.encode_digits(y,n_output)
     network.check_gradients(X,Yohe,weights)   
+
+def check_accuracy(sae_softmax):   
+    # ------ train accuracy
+    predicted_ytrain = sae_softmax.predict(mnist.Xtrain)
+    print "Train Accuracy: %3.2f%%" % (accuracy_score(mnist.ytrain,predicted_ytrain) * 100)
+
+    # ------ test accuracy
+    predicted_ytest = sae_softmax.predict(mnist.Xtest)
+    print "Test Accuracy: %3.2f%%" % (accuracy_score(mnist.ytest,predicted_ytest) * 100)
+
+def pretain_finetune():
+    n_features = mnist.Xtrain.shape[1]
+    n_output = 10
+    num_neurons = [n_features,180,180,n_output]
+    sae_softmax = StackedAutoEncoderSoftmaxNetwork(num_neurons,params=params)
+
+    # ------ pre-training
+    sae_softmax.pretrain(mnist.Xtrain,mnist.ytrain,maxiter=400)
+
+    # Train Accuracy: 98.63%
+    # Test Accuracy: 98.41%
+    check_accuracy(sae_softmax)
+
+    # ------ fine tune
+    sae_softmax.finetune(mnist.Xtrain,mnist.ytrain,maxiter=400)
+
+    # Train Accuracy: 100%
+    # Test Accuracy: 99.02%
+    check_accuracy(sae_softmax)
