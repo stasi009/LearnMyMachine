@@ -24,7 +24,11 @@ class StackedAutoEncoderSoftmaxNetwork(NeuralNetworkBase):
         for index,sae in enumerate(self.saes):
             print "********** start pretraining %d-th SparseAutoEncoder **********" % (index + 1)
             sae.fit(prev_features,maxiter=maxiter)
-            sae.visualize_meta_features("SAE%d-FoundPattern.png" % (index + 1))
+
+            # such code cannot visualize the features found by 2nd hidden layer
+            # because 2nd layer compose 1st feature, not the raw feature
+            # which even visualized, cannot get any meaning from the image
+            # sae.visualize_meta_features("SAE%d-FoundPattern.png" % (index + 1))
 
             prev_features = sae.feedforward(prev_features)
             print "********** %d-th SparseAutoEncoder finish pretraining **********" % (index + 1)

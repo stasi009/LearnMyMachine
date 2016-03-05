@@ -26,9 +26,9 @@ def visualize_predicted_digits(X,ytrue,ypredict,nrows=5,ncols=5):
     plt.tight_layout()
     plt.show()
 
-# This function visualizes filters in matrix A. Each column of A is a
-# filter. We will reshape each column into a square image and visualizes
-# on each cell of the visualization panel.
+# This function visualizes filters in matrix A. Each column of A is a filter. 
+# We will reshape each column into a square image and visualizes on each cell of the visualization panel.
+# !!! it means the length of each column, aka, the number of rows, must be a square number
 # All other parameters are optional, usually you do not need to worry
 # about it.
 # opt_normalize: whether we need to normalize the filter so that all of
