@@ -65,7 +65,7 @@ class HiddenBlock(object):
         nobias_activation = self.activation[1:,:]
         return grad_activation[1:,:] * nobias_activation * (1 - nobias_activation)
 
-class OutputBlock(object):
+class SigmoidDecoder(object):
 
     def feedforward(self,X):
         """ X and output: [O,S] matrix """
@@ -85,13 +85,39 @@ class OutputBlock(object):
         num_samples = Y.shape[1]
         return (self.activation - Y) * self.activation * (1 - self.activation) / (float(num_samples))
 
+class LinearDecoder(object):
+
+    def feedforward(self,X):
+        """ X=activation: [O,S] matrix """
+        self.activation = X
+        return self.activation
+
+    def cost(self,Y):
+        """ Y: [O,S] matrix """
+        num_samples = Y.shape[1]
+        return np.sum((self.activation - Y) ** 2) / (2.0 * num_samples)
+
+    def backpropagate(self,Y):
+        """ 
+        Y: [O,S] matrix
+        return gradient wrt inputs: [O,S] matrix
+        """
+        num_samples = Y.shape[1]
+        return (self.activation - Y)  / (float(num_samples))
+
 class SparseAutoEncoder(NeuralNetworkBase):
 
-    def __init__(self,n_features,n_hidden,l2,expected_rho,sparse_beta):
+    def __init__(self,n_features,n_hidden,l2,expected_rho,sparse_beta,decoder="sigmoid"):
         self._input = InputBlock(n_features,n_hidden,l2=l2)
         self._hidden = HiddenBlock(n_hidden,n_features,l2=l2,expected_rho=expected_rho,sparse_beta=sparse_beta)
         self.weighted_blocks = [self._input,self._hidden]
-        self._output = OutputBlock()
+
+        if decoder.lower() == "sigmoid":
+            self._output = SigmoidDecoder()
+        elif decoder.lower() == "linear":
+            self._output = LinearDecoder()
+        else:
+            raise Exception("unsupported decoder type")
 
     def _cost(self,X,Y):
         output_from_input = self._input.feedforward(X)

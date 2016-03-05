@@ -41,6 +41,9 @@
     <Compile Include="ex5_stacked_autoencoders.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ex6_linear_decoder.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="matloader.py">
       <SubType>Code</SubType>
     </Compile>
