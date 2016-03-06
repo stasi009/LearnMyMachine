@@ -155,7 +155,7 @@ class SparseAutoEncoder(NeuralNetworkBase):
         # W is a [H,F+1] matrix
         meta_features = self._input.W[:,1:].transpose() # [F,H] matrix
         # display_image_patch will treat each column as a single image patch
-        display.display_image_patches(meta_features,pic_name)
+        display.display_patches(meta_features,pic_name)
 
 
 

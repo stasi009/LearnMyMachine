@@ -7,15 +7,15 @@ def visualize_predicted_digits(X,ytrue,ypredict,nrows=5,ncols=5):
     fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True,sharey=True)
     axes = axes.flatten()
 
-    selected_indices = np.random.randint(0,X.shape[0],nrows*ncols)
+    selected_indices = np.random.randint(0,X.shape[0],nrows * ncols)
     selected_images = X[selected_indices,:]
     selected_ytrue = ytrue[selected_indices]
     selected_ypredict = ypredict[selected_indices]
 
-    for index in xrange(nrows*ncols):
+    for index in xrange(nrows * ncols):
         imag = selected_images[index].reshape(28,28)
         axes[index].imshow(imag, cmap='Greys', interpolation='nearest')
-        title = axes[index].set_title('(%d) t: %d p: %d'% (index+1, selected_ytrue[index], selected_ypredict[index]))
+        title = axes[index].set_title('(%d) t: %d p: %d' % (index + 1, selected_ytrue[index], selected_ypredict[index]))
 
         # set title color based prediction is right or wrong
         color = "b" if selected_ytrue[index] == selected_ypredict[index] else "r"
@@ -26,17 +26,19 @@ def visualize_predicted_digits(X,ytrue,ypredict,nrows=5,ncols=5):
     plt.tight_layout()
     plt.show()
 
-# This function visualizes filters in matrix A. Each column of A is a filter. 
-# We will reshape each column into a square image and visualizes on each cell of the visualization panel.
-# !!! it means the length of each column, aka, the number of rows, must be a square number
+# This function visualizes filters in matrix A.  Each column of A is a filter.
+# We will reshape each column into a square image and visualizes on each cell
+# of the visualization panel.
+# !!!  it means the length of each column, aka, the number of rows, must be a
+# square number
 # All other parameters are optional, usually you do not need to worry
 # about it.
 # opt_normalize: whether we need to normalize the filter so that all of
-# them can have similar contrast. Default value is true.
-# opt_graycolor: whether we use gray as the heat map. Default is true.
-# opt_colmajor: you can switch convention to row major for A. In that
-# case, each row of A is a filter. Default value is false.
-def display_image_patches(A, filename=None,direction="bycolumn"):
+# them can have similar contrast.  Default value is true.
+# opt_graycolor: whether we use gray as the heat map.  Default is true.
+# opt_colmajor: you can switch convention to row major for A.  In that
+# case, each row of A is a filter.  Default value is false.
+def display_patches(A, filename=None,direction="bycolumn"):
     if direction == "byrow":
         A = A.T
 
@@ -80,7 +82,7 @@ def display_image_patches(A, filename=None,direction="bycolumn"):
         plt.imsave(filename, image, cmap=matplotlib.cm.gray)
 
 
-def display_color_network(A, filename='weights.png'):
+def display_color_patches(A, filename=None):
     """
     # display receptive field(s) or basis vector(s) for image patches
     #
@@ -121,7 +123,9 @@ def display_color_network(A, filename='weights.png'):
             image[i * dimp:i * dimp + dim, j * dimp:j * dimp + dim, 2] = D[:, i * cols + j].reshape(dim, dim)
 
     image = (image + 1) / 2
+    image = PIL.Image.fromarray(np.uint8(image * 255), 'RGB')
 
-    PIL.Image.fromarray(np.uint8(image * 255), 'RGB').save(filename)
-
-    return 0
+    if filename is None:
+        image.show()
+    else:     
+        image.save(filename)

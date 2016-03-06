@@ -17,12 +17,12 @@ def demo_image_pca():
     # --------------------- load and show original images
     patches = matloader.sample_raw_images("matlab/IMAGES_RAW.mat",n_samples,seed)
     images = patches.T # [n_samples,n_features], each row is a image, each column will be a pixel
-    display.display_image_patches(images[random_sel,:],filename="raw_images.png",direction="byrow")
+    display.display_patches(images[random_sel,:],filename="raw_images.png",direction="byrow")
 
     # --------------------- zero mean
     image_means = images.mean(axis=1)# mean for each sample
     images = images - image_means[:,np.newaxis]# transform into column vector to be broadcasted
-    display.display_image_patches(images[random_sel,:],filename="raw_images_0mean.png",direction="byrow")
+    display.display_patches(images[random_sel,:],filename="raw_images_0mean.png",direction="byrow")
 
     # --------------------- SVD
     U,S,Vt = np.linalg.svd(images)
@@ -50,7 +50,7 @@ def demo_image_pca():
         constructed_images = images.dot(V[:,:K]).dot(V[:,:K].T)
 
         imgfile = "images_reconstruct_%dvariance.png"%(var_kept_percent)
-        display.display_image_patches(constructed_images[random_sel,:],filename=imgfile,direction="byrow")
+        display.display_patches(constructed_images[random_sel,:],filename=imgfile,direction="byrow")
 
     for percent in [50,90,95,99]:
         reconstruct(percent)
