@@ -151,11 +151,16 @@ class SparseAutoEncoder(NeuralNetworkBase):
         # backpropagate expects [H,S] matrix matrix, so transpose
         return self._input.backpropagate(grad_input_output.T)# return [S,F] matrix
 
-    def visualize_meta_features(self,pic_name=None):
+    def visualize_meta_features(self,pic_name=None,color=False):
         # W is a [H,F+1] matrix
         meta_features = self._input.W[:,1:].transpose() # [F,H] matrix
-        # display_image_patch will treat each column as a single image patch
-        display.display_patches(meta_features,pic_name)
+
+        # display_patch will treat each column as a single image patch
+        if color:
+            display.display_color_patches(meta_features,pic_name)
+        else:
+            display.display_patches(meta_features,pic_name)
+
 
 
 
