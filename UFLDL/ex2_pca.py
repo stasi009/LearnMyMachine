@@ -6,6 +6,16 @@ import matloader
 import display
 from pca import SimplePCA
 
+def demo_two_methods_equivalence():
+    X = np.loadtxt("matlab/pcaData.txt").T
+    
+    svd_result = SimplePCA(whiten=True).fit_transform(X,method="svd")
+    evd_result = SimplePCA(whiten=True).fit_transform(X,method="evd")
+
+    plt.scatter(svd_result[:,0],svd_result[:,1],color="r",marker="o",label="PCA by Singular-Value-Decomposition")
+    plt.scatter(evd_result[:,0],evd_result[:,1],color="b",marker="*",label="PCA by Eigen-Value-Decomposition")
+    plt.legend(loc="best")
+
 def demo_image_pca():
     seed = 9
     np.random.seed(seed)

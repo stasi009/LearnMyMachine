@@ -20,10 +20,10 @@ class SimplePCA(object):
         feature_std = X.std(axis=0)
         self.Xnormalized = (X - feature_mean) / feature_std 
 
-        if matrix.lower() == "svd":
+        if method.lower() == "svd":
             U,self.S,Vt = np.linalg.svd(self.Xnormalized)
             self.V = Vt.T
-        elif matrix.lower() == "evd":
+        elif method.lower() == "evd":
             covariance =  self.Xnormalized.T.dot(self.Xnormalized)
             self.V,S, _ = np.linalg.svd(covariance)
             self.S = np.sqrt(S)
