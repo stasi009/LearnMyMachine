@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -9,3 +9,9 @@
 /UFLDL/data
 /UFLDL/iterate.dat
 *.mat
+
+TopicModelAirbnb/reviews.csv
+TopicModelAirbnb/.idea
+TopicModelAirbnb/mongodb
+
+*.swp
