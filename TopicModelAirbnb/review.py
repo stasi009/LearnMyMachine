@@ -56,3 +56,7 @@ class ReviewsDAL(object):
         cursor = self._collection.find({}, { 'text':0})
         for d in cursor:
             yield Review.from_dict(d)
+
+    def sampling(self,size):
+        cursor = self._collection.aggregate([{'$sample': {'size': size}}])
+        return ( Review.from_dict(d) for d in cursor)
