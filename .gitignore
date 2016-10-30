@@ -15,3 +15,11 @@ TopicModelAirbnb/.idea
 TopicModelAirbnb/mongodb
 
 *.swp
+
+*.lda_model
+
+*.bow
+
+*.index
+
+*.state
