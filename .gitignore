@@ -23,3 +23,5 @@ TopicModelAirbnb/mongodb
 *.index
 
 *.state
+
+TopicModelAirbnb/reviews_summary.csv
