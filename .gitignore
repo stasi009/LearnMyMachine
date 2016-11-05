@@ -29,3 +29,9 @@ TopicModelAirbnb/reviews_summary.csv
 TopicModelAirbnb/listings.csv
 
 TopicModelAirbnb/listings_summary.csv
+
+*.dict
+
+TopicModelAirbnb/codeword_dictionary.txt
+
+TopicModelAirbnb/codeword_dictionary.txt
