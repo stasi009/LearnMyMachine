@@ -1,0 +1,194 @@
+
+############# TOPIC 0 #############
+0.092*locate + 0.066*meet_neg + 0.060*POSREVIEW + 0.040*conveniently + 0.038*communicative + 0.034*get_neg + 0.031*centrally + 0.030*HOSTNAME + 0.028*although + 0.023*chance_neg
+
+############# TOPIC 1 #############
+0.295*arrival + 0.130*day + 0.104*reservation + 0.086*cancel + 0.081*posting + 0.080*host + 0.078*automated + 0.074*upon + 0.003*difficulty_neg + 0.003*wednesday
+
+############# TOPIC 2 #############
+0.090*POSREVIEW + 0.034*HOSTNAME + 0.031*family + 0.017*two + 0.017*kitchen + 0.013*kid + 0.012*day + 0.011*old + 0.011*love + 0.011*daughter
+
+############# TOPIC 3 #############
+0.173*NEGREVIEW + 0.041*POSREVIEW + 0.027*HOSTNAME + 0.023*stay_neg + 0.023*could + 0.015*place_neg + 0.014*good_neg + 0.011*time_neg + 0.010*much_neg + 0.010*get_neg
+
+############# TOPIC 4 #############
+0.243*walk + 0.180*distance + 0.143*within + 0.063*bart + 0.041*short + 0.037*restaurant + 0.029*station + 0.014*mission + 0.009*POSREVIEW + 0.007*lot
+
+############# TOPIC 5 #############
+0.021*glad + 0.020*POSREVIEW + 0.015*NEGREVIEW + 0.013*traveler + 0.013*courteous + 0.012*brother + 0.011*HOSTNAME + 0.011*adventure + 0.010*trader + 0.010*give_neg
+
+############# TOPIC 6 #############
+0.161*expect + 0.067*good + 0.058*basic + 0.026*accommodation + 0.019*geary + 0.018*hard + 0.016*POSREVIEW + 0.016*classic + 0.015*hotel + 0.012*security
+
+############# TOPIC 7 #############
+0.094*HOSTNAME + 0.091*POSREVIEW + 0.032*stay + 0.030*time + 0.026*place + 0.025*best + 0.023*house + 0.018*first + 0.018*experience + 0.017*go
+
+############# TOPIC 8 #############
+0.147*POSREVIEW + 0.050*HOSTNAME + 0.026*bus + 0.019*get + 0.016*house + 0.015*city + 0.015*downtown + 0.013*walk + 0.012*take + 0.011*also
+
+############# TOPIC 9 #############
+0.133*described + 0.064*delightful + 0.041*deal + 0.041*visitor + 0.037*HOSTNAME + 0.036*ease + 0.033*affordable + 0.030*highly_neg + 0.023*yes + 0.022*special
+
+############# TOPIC 10 #############
+0.178*park + 0.101*gate + 0.097*golden + 0.093*POSREVIEW + 0.035*beach + 0.031*close + 0.030*block + 0.027*walk + 0.023*dolores + 0.021*condo
+
+############# TOPIC 11 #############
+0.028*far_neg + 0.025*walk_neg + 0.025*car_neg + 0.024*need_neg + 0.024*around_neg + 0.018*POSREVIEW + 0.017*HOSTNAME + 0.016*trouble_neg + 0.015*want_neg + 0.015*even_neg
+
+############# TOPIC 12 #############
+0.067*minute + 0.057*car + 0.053*last + 0.047*parking + 0.036*drive + 0.034*uber + 0.031*garage + 0.030*POSREVIEW + 0.028*park + 0.019*rent
+
+############# TOPIC 13 #############
+0.058*cottage + 0.044*POSREVIEW + 0.019*HOSTNAME + 0.014*find_neg + 0.012*parking + 0.011*park_neg + 0.010*parking_neg + 0.010*save + 0.009*street_neg + 0.008*law
+
+############# TOPIC 14 #############
+0.163*POSREVIEW + 0.054*great + 0.041*HOSTNAME + 0.040*restaurant + 0.035*apartment + 0.026*location + 0.025*mission + 0.022*bar + 0.021*shop + 0.019*stay
+
+############# TOPIC 15 #############
+0.109*home + 0.108*POSREVIEW + 0.049*like + 0.045*felt + 0.039*HOSTNAME + 0.038*feel + 0.022*make + 0.020*away + 0.010*right + 0.009*family
+
+############# TOPIC 16 #############
+0.220*POSREVIEW + 0.068*HOSTNAME + 0.065*stay + 0.050*would + 0.036*great + 0.032*definitely + 0.032*recommend + 0.030*place + 0.023*make + 0.022*apartment
+
+############# TOPIC 17 #############
+0.100*flat + 0.068*exactly + 0.068*listing + 0.054*describe + 0.052*instruction + 0.044*description + 0.043*apt + 0.043*POSREVIEW + 0.040*clear + 0.040*accurate
+
+############# TOPIC 18 #############
+0.211*POSREVIEW + 0.051*HOSTNAME + 0.014*coffee + 0.014*well + 0.013*stay + 0.011*lovely + 0.010*welcome + 0.009*comfortable + 0.009*make + 0.009*even
+
+############# TOPIC 19 #############
+0.154*POSREVIEW + 0.051*HOSTNAME + 0.034*check + 0.023*great + 0.023*place + 0.020*get + 0.016*even + 0.015*arrive + 0.015*stay + 0.014*time
+
+############# TOPIC 20 #############
+0.015*animal + 0.014*mother + 0.011*personable + 0.011*funky + 0.010*realize + 0.008*stand + 0.008*guidebook + 0.008*buena + 0.008*saturday + 0.008*purpose
+
+############# TOPIC 21 #############
+0.086*NEGREVIEW + 0.084*POSREVIEW + 0.019*room + 0.012*HOSTNAME + 0.012*bit + 0.011*bed + 0.011*night + 0.010*street + 0.009*bathroom + 0.009*one
+
+############# TOPIC 22 #############
+0.045*POSREVIEW + 0.033*towel + 0.015*provide + 0.015*etc + 0.014*wifi + 0.014*need + 0.012*tv + 0.012*sheet + 0.011*NEGREVIEW + 0.011*machine
+
+############# TOPIC 23 #############
+0.127*POSREVIEW + 0.065*HOSTNAME + 0.026*look + 0.018*city + 0.018*back + 0.016*garden + 0.016*view + 0.016*mission + 0.015*hill + 0.013*place
+
+############# TOPIC 24 #############
+0.058*HOSTNAME + 0.041*take + 0.037*POSREVIEW + 0.030*care + 0.024*make + 0.021*detail + 0.019*say + 0.013*tell + 0.013*guest + 0.013*feel
+
+############# TOPIC 25 #############
+0.344*POSREVIEW + 0.054*great + 0.052*HOSTNAME + 0.036*nice + 0.035*place + 0.028*clean + 0.027*stay + 0.023*host + 0.023*location + 0.021*really
+
+############# TOPIC 26 #############
+0.218*POSREVIEW + 0.026*HOSTNAME + 0.024*apartment + 0.021*great + 0.020*easy + 0.018*restaurant + 0.018*neighborhood + 0.016*public + 0.016*quiet + 0.015*close
+
+############# TOPIC 27 #############
+0.197*POSREVIEW + 0.075*HOSTNAME + 0.036*question + 0.024*stay + 0.020*quick + 0.019*respond + 0.019*always + 0.017*need + 0.015*host + 0.015*answer
+
+############# TOPIC 28 #############
+0.109*room + 0.071*bathroom + 0.045*POSREVIEW + 0.043*kitchen + 0.034*bedroom + 0.034*living + 0.033*private + 0.024*HOSTNAME + 0.022*large + 0.018*share
+
+############# TOPIC 29 #############
+0.267*POSREVIEW + 0.077*HOSTNAME + 0.027*view + 0.026*host + 0.025*beautiful + 0.025*stay + 0.023*amazing + 0.022*wonderful + 0.019*home + 0.015*thank
+
+
+
+****************** KEY WORDS ******************
+1-th keyword: <POSREVIEW,27>
+2-th keyword: <HOSTNAME,22>
+3-th keyword: <stay,8>
+4-th keyword: <great,5>
+5-th keyword: <place,5>
+6-th keyword: <NEGREVIEW,4>
+7-th keyword: <host,4>
+8-th keyword: <make,4>
+9-th keyword: <mission,3>
+10-th keyword: <apartment,3>
+11-th keyword: <restaurant,3>
+12-th keyword: <walk,3>
+13-th keyword: <get_neg,2>
+14-th keyword: <get,2>
+15-th keyword: <day,2>
+16-th keyword: <house,2>
+17-th keyword: <parking,2>
+18-th keyword: <close,2>
+19-th keyword: <even,2>
+20-th keyword: <view,2>
+21-th keyword: <kitchen,2>
+22-th keyword: <family,2>
+23-th keyword: <feel,2>
+24-th keyword: <city,2>
+25-th keyword: <bathroom,2>
+26-th keyword: <location,2>
+27-th keyword: <park,2>
+28-th keyword: <room,2>
+29-th keyword: <home,2>
+30-th keyword: <need,2>
+31-th keyword: <take,2>
+32-th keyword: <time,2>
+33-th keyword: <shop,1>
+34-th keyword: <neighborhood,1>
+35-th keyword: <visitor,1>
+36-th keyword: <accurate,1>
+37-th keyword: <give_neg,1>
+38-th keyword: <detail,1>
+39-th keyword: <bedroom,1>
+40-th keyword: <go,1>
+41-th keyword: <yes,1>
+42-th keyword: <thank,1>
+43-th keyword: <mother,1>
+44-th keyword: <tv,1>
+45-th keyword: <ease,1>
+46-th keyword: <realize,1>
+47-th keyword: <minute,1>
+48-th keyword: <recommend,1>
+49-th keyword: <listing,1>
+50-th keyword: <save,1>
+51-th keyword: <street_neg,1>
+52-th keyword: <centrally,1>
+53-th keyword: <coffee,1>
+54-th keyword: <good,1>
+55-th keyword: <garden,1>
+56-th keyword: <park_neg,1>
+57-th keyword: <private,1>
+58-th keyword: <find_neg,1>
+59-th keyword: <bar,1>
+60-th keyword: <bit,1>
+61-th keyword: <one,1>
+62-th keyword: <special,1>
+63-th keyword: <place_neg,1>
+64-th keyword: <highly_neg,1>
+65-th keyword: <like,1>
+66-th keyword: <car_neg,1>
+67-th keyword: <always,1>
+68-th keyword: <brother,1>
+69-th keyword: <large,1>
+70-th keyword: <garage,1>
+71-th keyword: <delightful,1>
+72-th keyword: <night,1>
+73-th keyword: <quick,1>
+74-th keyword: <security,1>
+75-th keyword: <courteous,1>
+76-th keyword: <geary,1>
+77-th keyword: <respond,1>
+78-th keyword: <locate,1>
+79-th keyword: <right,1>
+80-th keyword: <old,1>
+81-th keyword: <bart,1>
+82-th keyword: <deal,1>
+83-th keyword: <buena,1>
+84-th keyword: <hard,1>
+85-th keyword: <back,1>
+86-th keyword: <wednesday,1>
+87-th keyword: <welcome,1>
+88-th keyword: <street,1>
+89-th keyword: <expect,1>
+90-th keyword: <saturday,1>
+91-th keyword: <best,1>
+92-th keyword: <really,1>
+93-th keyword: <living,1>
+94-th keyword: <stay_neg,1>
+95-th keyword: <purpose,1>
+96-th keyword: <away,1>
+97-th keyword: <easy,1>
+98-th keyword: <hill,1>
+99-th keyword: <public,1>
+100-th keyword: <affordable,1>

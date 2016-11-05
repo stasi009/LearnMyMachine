@@ -25,3 +25,7 @@ TopicModelAirbnb/mongodb
 *.state
 
 TopicModelAirbnb/reviews_summary.csv
+
+TopicModelAirbnb/listings.csv
+
+TopicModelAirbnb/listings_summary.csv
