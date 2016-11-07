@@ -1,4 +1,6 @@
 
+import pandas as pd
+import numpy as np
 from pymongo import MongoClient
 import csv
 from review import Review,ReviewsDAL
@@ -38,6 +40,15 @@ def test_code_words():
         print r.sent.raw
         print "\n"
         print wordcoder.code(r.sent.words)
+
+def test_explore_listings():
+    fname = "listings.csv"
+    listings = pd.read_csv(fname)
+
+    scores = listings.loc[:,[u'review_scores_rating',
+       u'review_scores_accuracy', u'review_scores_cleanliness',
+       u'review_scores_checkin', u'review_scores_communication',
+       u'review_scores_location', u'review_scores_value']]
 
 if __name__ == "__main__":
     # test_read_csv()
